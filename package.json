@@ -9,6 +9,7 @@
     "@testing-library/user-event": "^12.1.10",
     "axios": "^0.21.0",
     "cors": "^2.8.5",
+    "cross-env": "^7.0.3",
     "eslint": "^7.15.0",
     "eslint-config-airbnb": "^18.2.1",
     "eslint-config-prettier": "^7.0.0",
@@ -29,7 +30,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "server": "nodemon --inspect=3777 ./server/index.js"
+    "server": "cross-env DEBUG='headlessScraper' nodemon --inspect=3777 ./server/index.js"
   },
   "eslintConfig": {
     "extends": [

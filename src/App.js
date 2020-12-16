@@ -52,12 +52,11 @@ function Scraper() {
           Do it
         </Button>
       </Container>
-
       {palettes && (
         <Container>
           {palettes.map((paletteData) => {
-            const { palette, fileName } = paletteData;
-            return <PaletteCard palette={palette} fileName={fileName} key={uuidv4()} />;
+            const { palette, fileName, tag } = paletteData;
+            return <PaletteCard palette={palette} fileName={fileName} tag={tag} key={uuidv4()} />;
           })}
         </Container>
       )}

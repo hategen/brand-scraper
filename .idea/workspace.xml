@@ -2,49 +2,35 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.editorconfig" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.eslintrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/brand-scraper.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/codeStyles/codeStyleConfig.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.prettierrc" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/AirBnbESlintcompatible.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/config.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/1996fcfdf7ca81ea795f67f093d7f449.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/338e4905a2684ca96e08c7780fc68412.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/34110fd7686e2c90a487ca98e7336e99.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/3dc95981de4241b35cd55fe126ab6b2c.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/58a19602036db1daee0d7863c94673a4.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/5f6e93af5bf0f5dcdd1eecdac99f51ee.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/7a7ffabbd910fc60161bc04f2cee4160.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/b0f1a8318363185cc2ea6a40ac23eeb2.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/c426a1116301d1fd178c51522484127a.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/da3ab40fb0861d15c83854c29f5f2962.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/f1786e9b7cba9753ca7b9c40e8b98f67.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/icon.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/tmp/screenshot_https___www_npmjs_com_products.png" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/PaletteCard/index.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/api.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/color.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/utils/url.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/config/logoSearch.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/1996fcfdf7ca81ea795f67f093d7f449.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/338e4905a2684ca96e08c7780fc68412.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/34110fd7686e2c90a487ca98e7336e99.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/3dc95981de4241b35cd55fe126ab6b2c.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/58a19602036db1daee0d7863c94673a4.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/5f6e93af5bf0f5dcdd1eecdac99f51ee.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/7a7ffabbd910fc60161bc04f2cee4160.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/b0f1a8318363185cc2ea6a40ac23eeb2.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/c426a1116301d1fd178c51522484127a.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/da3ab40fb0861d15c83854c29f5f2962.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/f1786e9b7cba9753ca7b9c40e8b98f67.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/icon.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/tmp/screenshot_https___www_npmjs_com_products.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.test.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.test.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PaletteCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/yarn.lock" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -70,6 +56,8 @@
     <property name="RunOnceActivity.OpenProjectViewOnStart" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="javascript.nodejs.core.library.configured.version" value="12.16.3" />
+    <property name="javascript.nodejs.core.library.typings.version" value="12.19.9" />
     <property name="js.linters.configure.manually.selectedeslint" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
@@ -90,6 +78,7 @@
       <recent name="C:\Users\hateg\dev\brand-scraper\src" />
     </key>
     <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\hateg\dev\brand-scraper\server" />
       <recent name="C:\Users\hateg\dev\brand-scraper" />
     </key>
   </component>
@@ -114,12 +103,51 @@
       <option name="presentableId" value="Default" />
       <updated>1608039054655</updated>
       <workItem from="1608039055817" duration="13538000" />
-      <workItem from="1608103175145" duration="7036000" />
+      <workItem from="1608103175145" duration="23318000" />
     </task>
+    <task id="LOCAL-00001" summary="initial commit">
+      <created>1608112333014</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1608112333014</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="3" />
+  </component>
+  <component name="VcsManagerConfiguration">
+    <MESSAGE value="initial commit" />
+    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
+          <line>5</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="18" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>94</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="22" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
+          <line>9</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="24" />
+        </line-breakpoint>
+      </breakpoints>
+      <default-breakpoints>
+        <breakpoint enabled="true" type="javascript-exception" />
+      </default-breakpoints>
+    </breakpoint-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

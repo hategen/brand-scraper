@@ -35,22 +35,27 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function PaletteCard({ palette, fileName }) {
+export function PaletteCard({ palette, fileName, tag }) {
   const classes = useStyles();
+
+  if (!palette) {
+    return null;
+  }
   const { mainColor = '#000000', colors = [] } = palette;
   const fullColorList = [mainColor, ...colors];
   return (
     <Card className={classes.root}>
       <div className={classes.details}>
-        <CardHeader title={fileName} />
+        <CardHeader title={fileName || tag} />
         <Box className={classes.content}>
-          <CardMedia
-            className={classes.image}
-            component="img"
-            image={`http://localhost:3007/static/${fileName}`}
-            title={fileName}
-          />
-
+          {fileName ? (
+            <CardMedia
+              className={classes.image}
+              component="img"
+              image={`http://localhost:3007/static/${fileName}`}
+              title={fileName}
+            />
+          ) : null}
           <CardContent className={classes.content}>
             {fullColorList.map((color) => {
               const style = {
