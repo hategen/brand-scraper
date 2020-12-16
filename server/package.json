@@ -1,0 +1,25 @@
+{
+  "name": "brandpallete",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "axios": "^0.21.0",
+    "canvas": "^2.6.1",
+    "color-convert": "^2.0.1",
+    "colorthief": "^2.3.2",
+    "express": "^4.17.1",
+    "get-svg-colors": "^1.5.1",
+    "image-palette": "^2.1.0",
+    "image-pixels": "^2.2.2",
+    "logo-scrape": "^1.1.0",
+    "puppeteer": "^5.5.0",
+    "rimraf": "^3.0.2",
+    "yargs": "^16.1.1"
+  }
+}
