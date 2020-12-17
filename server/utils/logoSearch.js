@@ -1,4 +1,3 @@
-const cheerio = require('cheerio');
 const debug = require('debug')('logoSearch');
 
 const findJsonLdImages = (text) => {

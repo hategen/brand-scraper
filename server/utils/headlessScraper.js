@@ -1,4 +1,3 @@
-const path = require('path');
 const puppeteer = require('puppeteer');
 const debug = require('debug')('headlessScraper');
 const { DEFAULT_VIEWPORT, DEFAULT_PAGE_WAIT_TIMEOUT } = require('../constants');
