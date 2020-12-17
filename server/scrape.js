@@ -37,7 +37,7 @@ async function scrape(url) {
   // const pageHtml = await injectCodeIntoPage(page, extractInnerHtml);
   // scraping the tags that could be our logo
   //const ls = new LogoSearch(page, url);
-  const logos = processScrapedLogos(await injectCodeIntoPage(page, scrapePage));
+  const logos = processScrapedLogos(await injectCodeIntoPage(page, scrapePage), url);
   const logoPalettes = await getPageImagesPalettes(logos);
 
   //removing unneeeded elements from page

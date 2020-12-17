@@ -35,7 +35,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function PaletteCard({ palette, fileName, tag }) {
+export function PaletteCard({ palette, safeFileName, fileName, tag }) {
   const classes = useStyles();
 
   if (!palette) {
@@ -46,14 +46,15 @@ export function PaletteCard({ palette, fileName, tag }) {
   return (
     <Card className={classes.root}>
       <div className={classes.details}>
+        <CardHeader title={safeFileName || tag} />
         <CardHeader title={fileName || tag} />
         <Box className={classes.content}>
-          {fileName ? (
+          {safeFileName ? (
             <CardMedia
               className={classes.image}
               component="img"
-              image={`http://localhost:3007/static/${fileName}`}
-              title={fileName}
+              image={`http://localhost:3007/static/${safeFileName}`}
+              title={safeFileName}
             />
           ) : null}
           <CardContent className={classes.content}>

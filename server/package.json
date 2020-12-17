@@ -17,7 +17,9 @@
     "express": "^4.17.1",
     "get-svg-colors": "^1.5.1",
     "image-palette": "^2.1.0",
+    "lodash": "^4.17.20",
     "puppeteer": "^5.5.0",
-    "rimraf": "^3.0.2"
+    "rimraf": "^3.0.2",
+    "uuid": "^8.3.2"
   }
 }

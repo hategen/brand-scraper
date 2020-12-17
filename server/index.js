@@ -9,10 +9,11 @@ app.use('/static', express.static(path.join(__dirname, 'palettes')));
 app.use('/static', express.static(path.join(__dirname, 'tmp')));
 app.use(cors());
 
-app.use((err, req, res) => {
+app.use(function (err, req, res, next) {
   console.error(err.stack);
   res.status(500).send('Something broke!');
 });
+
 
 // eslint-disable-next-line consistent-return
 app.get('/scrape', (req, res, next) => {

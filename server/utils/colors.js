@@ -1,7 +1,8 @@
+const debug = require('debug')('colors');
 const convert = require('color-convert');
 const axios = require('axios');
 const path = require('path');
-
+const { v4: uuid } = require('uuid');
 const fs = require('fs');
 const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
@@ -13,24 +14,46 @@ const util = require('util');
 
 const finished = util.promisify(stream.finished);
 
+const saveSVGData = async (data) => {
+  const safeFileName = `${uuid()}.svg`;
+  const fileName = safeFileName;
+  try {
+    fs.writeFileSync(path.join(__dirname, '..', 'tmp', safeFileName), data);
+    return {
+      fileName,
+      safeFileName,
+    };
+  } catch (e) {
+    debug(e.message, data, fileName, safeFileName);
+    return false;
+  }
+};
 const saveImage = async (url, fileName = '') => {
+  let safeFileName = '';
   try {
     const response = await axios({
       url,
       method: 'get',
       responseType: 'stream',
     });
+    //removing querystring
+    fileName = fileName || url.split('/').pop().split('?').shift();
 
-    fileName = fileName || url.split('/').pop();
+    const fileExtension = fileName.split('.').pop();
+    safeFileName = `${uuid()}.${fileExtension}`;
 
-    const stream = fs.createWriteStream(path.join(__dirname, '..', 'tmp', fileName));
+    const stream = fs.createWriteStream(path.join(__dirname, '..', 'tmp', safeFileName));
     response.data.pipe(stream);
     await finished(stream);
+
+    return {
+      fileName,
+      safeFileName,
+    };
   } catch (e) {
-    console.log(e.message, url, fileName);
+    debug(e.message, url, fileName, safeFileName);
     return false;
   }
-  return fileName;
 };
 
 const getPalettesFromTags = (props = {}, tag) => {
@@ -66,7 +89,7 @@ const savePalette = async (palette, fileName) => {
   const stream = canvas.createPNGStream();
   stream.pipe(out);
   await finished(out);
-  console.log(`The PNG palette file for ${fileName} created.`);
+  debug(`The PNG palette file for ${fileName} created.`);
 };
 
 const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
@@ -81,7 +104,8 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
       const mainColorHEX = `#${convert.rgb.hex(...mainColor)}`;
       palette.mainColor = mainColorHEX;
     } catch (err) {
-      console.log(`Error during getting main  color  from ${fileName}`, err.message || err.stack);
+      debug(`Error during getting main  color  from ${fileName}`, err.message || err.stack);
+      return false;
     }
 
     try {
@@ -92,7 +116,8 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
       const paletteColorsHex = [...new Set(paletteColors.map((el) => `#${convert.rgb.hex(...el)}`))];
       palette.colors = paletteColorsHex;
     } catch (err) {
-      console.log(`Error during getting main  color from ${fileName}`, err.message || err.stack);
+      debug(`Error during getting main  color from ${fileName}`, err.message || err.stack);
+      return false;
     }
   } else {
     const paletteColors = getColors(path.join(__dirname, '..', TMP_FOLDER, fileName));
@@ -118,12 +143,24 @@ async function getPageImagesPalettes(images = []) {
   const palettes = [];
   const filteredImages = images.filter((imageObject) => imageObject && !imageObject.url.endsWith('.ico'));
   for (const image of filteredImages) {
-    if (!image.url.includes('data:image')) {
-      const fileName = await saveImage(image.url);
-      if (fileName) {
-        const imagePalette = await getPalette(fileName);
-        imagePalette && (await savePalette(imagePalette, fileName));
+    if (!image.data) {
+      const { safeFileName, fileName } = await saveImage(image.url);
+      if (safeFileName) {
+        const imagePalette = await getPalette(safeFileName);
+        //    imagePalette && (await savePalette(imagePalette, safeFileName));
         palettes.push({
+          safeFileName,
+          fileName,
+          palette: imagePalette,
+        });
+      }
+    } else {
+      const { safeFileName, fileName } = await saveSVGData(image.url);
+      if (safeFileName) {
+        const imagePalette = await getPalette(safeFileName);
+        //    imagePalette && (await savePalette(imagePalette, safeFileName));
+        palettes.push({
+          safeFileName,
           fileName,
           palette: imagePalette,
         });

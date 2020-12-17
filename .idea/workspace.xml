@@ -2,12 +2,19 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/index.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -80,7 +87,8 @@
       <option name="presentableId" value="Default" />
       <updated>1608039054655</updated>
       <workItem from="1608039055817" duration="13538000" />
-      <workItem from="1608103175145" duration="34449000" />
+      <workItem from="1608103175145" duration="39045000" />
+      <workItem from="1608215173234" duration="9012000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -103,7 +111,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608209945062</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="- removed  cheerio dependency&#10;-minor style fixes">
+      <created>1608210120327</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1608210120327</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -113,7 +128,8 @@
     <MESSAGE value="initial commit" />
     <MESSAGE value=" refactored lots of stuff &#10; removed dependencies &#10; one request to  rule them all" />
     <MESSAGE value=" - changed teh way of tags scraping &#10; - cheerio is not used anymore" />
-    <option name="LAST_COMMIT_MESSAGE" value=" - changed teh way of tags scraping &#10; - cheerio is not used anymore" />
+    <MESSAGE value="- removed  cheerio dependency&#10;-minor style fixes" />
+    <option name="LAST_COMMIT_MESSAGE" value="- removed  cheerio dependency&#10;-minor style fixes" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -121,38 +137,65 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
           <line>4</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>9</line>
-          <properties lambdaOrdinal="-1" />
+          <line>10</line>
           <option name="timeStamp" value="24" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>33</line>
-          <properties lambdaOrdinal="-1" />
+          <line>44</line>
           <option name="timeStamp" value="36" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>23</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="38" />
+          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
+          <line>14</line>
+          <option name="timeStamp" value="44" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/scrape.js</url>
-          <line>40</line>
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>139</line>
+          <option name="timeStamp" value="48" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>29</line>
+          <option name="timeStamp" value="51" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
+          <line>117</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="39" />
+          <option name="timeStamp" value="54" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
+          <line>105</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="55" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/node_modules/colorthief/src/color-thief.js</url>
+          <line>59</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="56" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
+          <line>20</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="59" />
         </line-breakpoint>
       </breakpoints>
-      <default-breakpoints>
-        <breakpoint enabled="true" type="javascript-exception" />
-      </default-breakpoints>
     </breakpoint-manager>
+    <watches-manager>
+      <configuration name="ChromiumRemoteDebugType">
+        <watch expression="!isValidUrl(image.url) &amp;&amp; image.url.indexOf('data:') === -1" />
+        <watch expression="isValidUrl.test(url);" />
+      </configuration>
+    </watches-manager>
   </component>
   <component name="XSLT-Support.FileAssociations.UIState">
     <expand />

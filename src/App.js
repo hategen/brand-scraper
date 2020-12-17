@@ -55,8 +55,10 @@ function Scraper() {
       {palettes && (
         <Container>
           {palettes.map((paletteData) => {
-            const { palette, fileName, tag } = paletteData;
-            return <PaletteCard palette={palette} fileName={fileName} tag={tag} key={uuidv4()} />;
+            const { palette, fileName, tag, safeFileName } = paletteData;
+            return (
+              <PaletteCard palette={palette} fileName={fileName} safeFileName={safeFileName} tag={tag} key={uuidv4()} />
+            );
           })}
         </Container>
       )}

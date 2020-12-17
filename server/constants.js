@@ -1,6 +1,6 @@
 module.exports = {
   PALETTE_ELEMENT_WIDTH: 100,
-  PALETTE_MAX_COLORS: 5,
+  PALETTE_MAX_COLORS: 4,
   PALETTES_FOLDER: 'palettes',
   TMP_FOLDER: 'tmp',
   SELECTORS: {

@@ -29,7 +29,7 @@ const openPage = async (browser, config) => {
 
   page.setViewport(viewport);
   await page.goto(url);
-  await page.waitFor(waitTimeout);
+ // await page.waitFor(waitTimeout);
 
   return page;
 };

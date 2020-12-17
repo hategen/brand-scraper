@@ -1,8 +1,9 @@
 const debug = require('debug')('logoSearch');
+const uniqBy = require('lodash/uniqBy');
 
 const findJsonLdImages = (text) => {
   const info = JSON.parse(text);
-  return info ? info.logo : null;
+  return info && info.logo && info.logo.url ? info.logo.url : null;
 };
 const svgToDataURL = (svgStr) => {
   if (svgStr && svgStr.indexOf('svg') && svgStr.indexOf('href') === -1) {
@@ -14,99 +15,128 @@ const svgToDataURL = (svgStr) => {
   }
 };
 
+const extractURL = (cssURl) => /(?:\(['"]?)(.*?)(?:['"]?\))/.exec(cssURl)[1];
+
 const isValidUrl = (url) => {
-  const isValidUrl = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
-  return isValidUrl.test(url);
+  try {
+    new URL(url);
+    return true;
+  } catch (e) {
+    return false;
+  }
+  /*
+   * const isValidUrl = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
+   * return isValidUrl.test(url);
+   */
 };
 
 const scrapePage = () => {
+  let headerSelectorPart = ``;
+  if (document.querySelectorAll('header').length > 0) {
+    headerSelectorPart = `header `;
+  } else if (document.querySelectorAll('[class*="header"]').length > 0) {
+    headerSelectorPart = `.${[...document.querySelectorAll('[class*="header"]')[0].classList].filter((x) =>
+      x.toLowerCase().includes('header')
+    )}`;
+  }
   const scrapers = [
     () =>
-      [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => {
-        return {
-          type: 'og:logo',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => ({
+        type: 'og:logo',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`meta[property="og:image"]`)].map((el) => {
-        return {
-          type: 'og:image',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[property="og:image"]`)].map((el) => ({
+        type: 'og:image',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`meta[itemprop="logo"]`)].map((el) => {
-        return {
-          type: 'meta-itemprop/logo',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[itemprop="logo"]`)].map((el) => ({
+        type: 'meta-itemprop/logo',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`link[rel*="icon"]`)].map((el) => {
-        return {
-          type: 'link-rel/icon',
-          url: el.getAttribute('href'),
-          size: el.getAttribute('sizes'),
-        };
-      }),
+      [...document.querySelectorAll(`link[rel*="icon"]`)].map((el) => ({
+        type: 'link-rel/icon',
+        url: el.getAttribute('href'),
+        size: el.getAttribute('sizes'),
+      })),
     () =>
-      [...document.querySelectorAll(`img[itemprop="logo"]`)].map((el) => {
-        return {
-          type: 'img-itemprop/logo',
-          url: el.getAttribute('src'),
-        };
-      }),
+      [...document.querySelectorAll(`${headerSelectorPart} img[itemprop="logo"]`)].map((el) => ({
+        type: 'img-itemprop/logo',
+        url: el.getAttribute('src'),
+      })),
     () =>
-      [...document.querySelectorAll(`meta[name*="msapplication-TileImage"]`)].map((el) => {
-        return {
-          type: 'meta-name/msapplication-TileImage',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[name*="msapplication-TileImage"]`)].map((el) => ({
+        type: 'meta-name/msapplication-TileImage',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => {
-        return {
-          type: 'meta-content/logo',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => ({
+        type: 'meta-content/logo',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => {
-        return {
-          type: 'meta-content/image',
-          url: el.getAttribute('content'),
-        };
-      }),
+      [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => ({
+        type: 'meta-content/image',
+        url: el.getAttribute('content'),
+      })),
     () =>
-      [...document.querySelectorAll(`script[type*="application/ld+json"]`)].map((el) => {
-        return {
-          type: 'json-ld-logo',
-          url: el.innerHTML, //findJsonLdImages
-        };
-      }),
+      [...document.querySelectorAll(`script[type*="application/ld+json"]`)].map((el) => ({
+        type: 'json-ld-logo',
+        url: el.innerHTML, // findJsonLdImages
+      })),
     () =>
-      [...document.querySelectorAll(`img[alt*="logo"]`)].map((el) => {
-        return {
-          type: 'img-alt/logo',
-          url: el.getAttribute('src'),
-        };
-      }),
+      [...document.querySelectorAll(`${headerSelectorPart} img[alt*="logo"]`)].map((el) => ({
+        type: 'img-alt/logo',
+        url: el.getAttribute('src'),
+      })),
     () =>
-      [...document.querySelectorAll(`img[class*="logo"]`)].map((el) => {
-        return {
-          type: 'img-alt/logo-class',
-          url: el.getAttribute('src'),
-        };
-      }),
+      [...document.querySelectorAll(`${headerSelectorPart} img[class*="logo"]`)].map((el) => ({
+        type: 'img-alt/logo-class',
+        url: el.getAttribute('src'),
+      })),
+/*    () =>
+      [...document.querySelectorAll(`${headerSelectorPart} a[class*="logo"]`)].map((el) => ({
+        type: 'svg:image',
+        data: true,
+        url: el.innerHTML, // svgToDataURL
+      })),*/
     () =>
-      [...document.querySelectorAll(`a[class*="logo"]`)].map((el) => {
-        return {
-          type: 'svg:image',
-          data: true,
-          url: el.innerHTML, //svgToDataURL
-        };
-      }),
+      [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`, `header *`])]
+        .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
+        .filter((el) => el !== 'none')
+        .map((el) => ({
+          type: 'css:background-image',
+          url: el, // extractURL
+        })),
+    () =>
+      [
+        ...document.querySelectorAll([
+          `[aria-label*="home"] img`,
+          `a[href="/"] img`,
+          `[rel="home"] img`,
+          `a[href="${location.origin}"] img`,
+          `a[href="${location.origin}/"] img`,
+        ]),
+      ].map((el) => ({
+        type: 'img-nested/logo-class',
+        url: el.getAttribute('src'),
+      })),
+    () =>
+      [
+        ...document.querySelectorAll([
+          `[aria-label*="home"] svg`,
+          `a[href="/"] svg`,
+          `[rel="home"] svg`,
+          `a[href="${location.origin}"] svg`,
+          `a[href="${location.origin}/"] svg`,
+        ]),
+      ].map((el) => ({
+        type: 'svg:imageRaw',
+        data: true,
+        url: el.outerHTML, // svgToDataURL
+      })),
   ];
 
   return scrapers.reduce((acc, scraperFunc) => {
@@ -118,107 +148,46 @@ const scrapePage = () => {
 const logoProcessors = {
   'svg:image': svgToDataURL,
   'json-ld-logo': findJsonLdImages,
+  'css:background-image': extractURL,
 };
 
-const processScrapedLogos = (logos) => {
-  return logos.map((logo) => {
-    if (logoProcessors[logo.type] && typeof logoProcessors[logo.type] === 'function') {
-      // eslint-disable-next-line no-param-reassign
-      logo.url = logoProcessors[logo.type](logo.url);
-    }
-    return logo;
-  });
-};
+const processScrapedLogos = (logos, url) => {
+  const parsedUrl = new URL(url);
+  const host = `${parsedUrl.protocol}//${parsedUrl.host}`;
 
-class LogoSearch {
-  constructor(htmlContent, url) {
-    this.$ = cheerio.load(htmlContent, url);
-    const parsedUrl = new URL(url);
-    this.host = `${parsedUrl.protocol}//${parsedUrl.host}`;
-  }
+  const processedLogos = logos
+    .map((logo) => {
+      if (logoProcessors[logo.type] && typeof logoProcessors[logo.type] === 'function') {
+        // eslint-disable-next-line no-param-reassign
+        logo.url = logoProcessors[logo.type](logo.url);
+      }
+      return logo;
+    })
+    .filter((logo) => logo.url)
+    .map((logo) => {
+      if (logo.url && logo.url.startsWith('//')) {
+        logo.url = `${parsedUrl.protocol}${logo.url}`;
+      }
+      return logo;
+    });
 
-  parse() {
-    const logos = [
-      {
-        type: 'og:logo',
-        url: this.$('meta[property="og:logo"]').attr('content'),
-      },
-      {
-        type: 'meta-itemprop/logo',
-        url: this.$('meta[itemprop="logo"]').attr('content'),
-      },
-      ...this.$('link[rel*="icon"]')
-        .map((i, el) => {
-          return {
-            type: 'link-rel/icon',
-            url: this.$(el).attr('href'),
-            size: this.$(el).attr('sizes'),
-          };
-        })
-        .get(),
-      {
-        type: 'img-itemprop/logo',
-        url: this.$('img[itemprop="logo"]').attr('src'),
-      },
-      {
-        type: 'meta-name/msapplication-TileImage',
-        url: this.$('meta[name*="msapplication-TileImage"]').attr('content'),
-      },
-      {
-        type: 'meta-content/logo',
-        url: this.$('meta[content*="logo"]').attr('content'),
-      },
-      {
-        type: 'meta-content/image',
-        url: this.$('meta[itemprop*="image"]').attr('content'),
-      },
-      ...this.$('script[type*="application/ld+json"]')
-        .map((i, el) => {
-          return {
-            type: 'json-ld-logo',
-            url: findJsonLdImages(this.$(el).html()),
-          };
-        })
-        .get(),
-      {
-        type: 'img-alt/logo',
-        url: this.$('img[alt*="logo"]').attr('src'),
-      },
-      {
-        type: 'img-alt/logo-class',
-        url: this.$('img[class*="logo"]').attr('src'),
-      },
-      {
-        type: 'img-src/logo',
-        url: this.$('img[src*="logo"]').attr('src'),
-      },
-      {
-        type: 'og:image',
-        url: this.$('meta[property="og:image"]').attr('content'),
-      },
-      {
-        type: 'svg:image',
-        data: true,
-        url: svgToDataURL(this.$('a[class*="logo"]').html()),
-      },
-    ].filter((e) => e.url);
-
-    const correctLogos = logos.map((image) => {
-      return !isValidUrl(image.url) && image.url.indexOf('data:') === -1
+  const correctLogos = uniqBy(
+    processedLogos.map((image) =>
+      !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
         ? {
             ...image,
-            url: `${this.host}${image.url}`,
+            url: `${host}${image.url}`,
           }
-        : image;
-    });
-    debug(JSON.stringify(correctLogos, null, 2));
+        : image
+    ),
+    'url'
+  );
 
-    return correctLogos;
-  }
-}
+  debug(JSON.stringify(correctLogos, null, 2));
+  return correctLogos;
+};
 
 module.exports = {
-  LogoSearch,
   scrapePage,
   processScrapedLogos,
 };
