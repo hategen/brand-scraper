@@ -51,10 +51,6 @@ const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFu
   }
 };
 
-const extractInnerHtml = () => {
-  return document.documentElement.innerHTML;
-};
-
 const cleanPage = () => {
   document.querySelectorAll('img').forEach((el) => {
     el.parentNode.removeChild(el);
@@ -100,7 +96,6 @@ const getPropsBySelector = (selectors, properties) => {
 module.exports = {
   init,
   injectCodeIntoPage,
-  extractInnerHtml,
   closeBrowser,
   cleanPage,
   getPropsBySelector,

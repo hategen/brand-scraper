@@ -1,15 +1,8 @@
 const rimraf = require('rimraf');
 const path = require('path');
 
-const { LogoSearch } = require('./utils/logoSearch');
-const {
-  init,
-  injectCodeIntoPage,
-  extractInnerHtml,
-  closeBrowser,
-  cleanPage,
-  getPropsBySelector,
-} = require('./utils/headlessScraper');
+const { scrapePage, processScrapedLogos } = require('./utils/logoSearch');
+const { init, injectCodeIntoPage, closeBrowser, cleanPage, getPropsBySelector } = require('./utils/headlessScraper');
 const { getPageImagesPalettes, getPalette, savePalette, getPalettesFromTags } = require('./utils/colors');
 
 const { PALETTES_FOLDER, TMP_FOLDER, SELECTORS } = require('./constants');
@@ -41,10 +34,10 @@ async function scrape(url) {
 
   const { page, browser } = await init({ url });
   //extracting html  content from page
-  const pageHtml = await injectCodeIntoPage(page, extractInnerHtml);
+  // const pageHtml = await injectCodeIntoPage(page, extractInnerHtml);
   // scraping the tags that could be our logo
-  const ls = new LogoSearch(pageHtml, url);
-  const logos = ls.parse();
+  //const ls = new LogoSearch(page, url);
+  const logos = processScrapedLogos(await injectCodeIntoPage(page, scrapePage));
   const logoPalettes = await getPageImagesPalettes(logos);
 
   //removing unneeeded elements from page

@@ -1,4 +1,5 @@
 const cheerio = require('cheerio');
+const debug = require('debug')('logoSearch');
 
 const findJsonLdImages = (text) => {
   const info = JSON.parse(text);
@@ -17,6 +18,117 @@ const svgToDataURL = (svgStr) => {
 const isValidUrl = (url) => {
   const isValidUrl = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
   return isValidUrl.test(url);
+};
+
+const scrapePage = () => {
+  const scrapers = [
+    () =>
+      [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => {
+        return {
+          type: 'og:logo',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`meta[property="og:image"]`)].map((el) => {
+        return {
+          type: 'og:image',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`meta[itemprop="logo"]`)].map((el) => {
+        return {
+          type: 'meta-itemprop/logo',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`link[rel*="icon"]`)].map((el) => {
+        return {
+          type: 'link-rel/icon',
+          url: el.getAttribute('href'),
+          size: el.getAttribute('sizes'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`img[itemprop="logo"]`)].map((el) => {
+        return {
+          type: 'img-itemprop/logo',
+          url: el.getAttribute('src'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`meta[name*="msapplication-TileImage"]`)].map((el) => {
+        return {
+          type: 'meta-name/msapplication-TileImage',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => {
+        return {
+          type: 'meta-content/logo',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => {
+        return {
+          type: 'meta-content/image',
+          url: el.getAttribute('content'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`script[type*="application/ld+json"]`)].map((el) => {
+        return {
+          type: 'json-ld-logo',
+          url: el.innerHTML, //findJsonLdImages
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`img[alt*="logo"]`)].map((el) => {
+        return {
+          type: 'img-alt/logo',
+          url: el.getAttribute('src'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`img[class*="logo"]`)].map((el) => {
+        return {
+          type: 'img-alt/logo-class',
+          url: el.getAttribute('src'),
+        };
+      }),
+    () =>
+      [...document.querySelectorAll(`a[class*="logo"]`)].map((el) => {
+        return {
+          type: 'svg:image',
+          data: true,
+          url: el.innerHTML, //svgToDataURL
+        };
+      }),
+  ];
+
+  return scrapers.reduce((acc, scraperFunc) => {
+    acc.push(...scraperFunc());
+    return acc;
+  }, []);
+};
+
+const logoProcessors = {
+  'svg:image': svgToDataURL,
+  'json-ld-logo': findJsonLdImages,
+};
+
+const processScrapedLogos = (logos) => {
+  return logos.map((logo) => {
+    if (logoProcessors[logo.type] && typeof logoProcessors[logo.type] === 'function') {
+      // eslint-disable-next-line no-param-reassign
+      logo.url = logoProcessors[logo.type](logo.url);
+    }
+    return logo;
+  });
 };
 
 class LogoSearch {
@@ -100,9 +212,14 @@ class LogoSearch {
           }
         : image;
     });
+    debug(JSON.stringify(correctLogos, null, 2));
 
     return correctLogos;
   }
 }
 
-module.exports = { LogoSearch };
+module.exports = {
+  LogoSearch,
+  scrapePage,
+  processScrapedLogos,
+};

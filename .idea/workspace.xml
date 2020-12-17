@@ -2,35 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/server/config/logoSearch.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/1996fcfdf7ca81ea795f67f093d7f449.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/338e4905a2684ca96e08c7780fc68412.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/34110fd7686e2c90a487ca98e7336e99.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/3dc95981de4241b35cd55fe126ab6b2c.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/58a19602036db1daee0d7863c94673a4.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/5f6e93af5bf0f5dcdd1eecdac99f51ee.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/7a7ffabbd910fc60161bc04f2cee4160.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/b0f1a8318363185cc2ea6a40ac23eeb2.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/c426a1116301d1fd178c51522484127a.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/da3ab40fb0861d15c83854c29f5f2962.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/f1786e9b7cba9753ca7b9c40e8b98f67.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/icon.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/tmp/screenshot_https___www_npmjs_com_products.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/PaletteCard/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/index.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -103,7 +80,7 @@
       <option name="presentableId" value="Default" />
       <updated>1608039054655</updated>
       <workItem from="1608039055817" duration="13538000" />
-      <workItem from="1608103175145" duration="23318000" />
+      <workItem from="1608103175145" duration="34224000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -112,7 +89,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608112333014</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary=" refactored lots of stuff &#10; removed dependencies &#10; one request to  rule them all">
+      <created>1608129796432</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1608129796432</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -120,7 +104,8 @@
   </component>
   <component name="VcsManagerConfiguration">
     <MESSAGE value="initial commit" />
-    <option name="LAST_COMMIT_MESSAGE" value="initial commit" />
+    <MESSAGE value=" refactored lots of stuff &#10; removed dependencies &#10; one request to  rule them all" />
+    <option name="LAST_COMMIT_MESSAGE" value=" refactored lots of stuff &#10; removed dependencies &#10; one request to  rule them all" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -132,16 +117,28 @@
           <option name="timeStamp" value="18" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>94</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="22" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
           <line>9</line>
           <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="24" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>34</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="36" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>24</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="38" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/scrape.js</url>
+          <line>40</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="39" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
