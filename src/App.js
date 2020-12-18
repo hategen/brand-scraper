@@ -12,11 +12,15 @@ const useStyles = makeStyles(() => ({
     padding: '36px 24px',
   },
   textField: {
-    width: 'calc(80% - 100px)',
+    width: 'calc(90% - 100px)',
     margin: '0px 24px ',
   },
   button: {
     width: '100px',
+  },
+  palettesContainer: {
+    display: 'flex',
+    flexWrap: `wrap`,
   },
 }));
 
@@ -53,11 +57,18 @@ function Scraper() {
         </Button>
       </Container>
       {palettes && (
-        <Container>
+        <Container className={classes.palettesContainer}>
           {palettes.map((paletteData) => {
-            const { palette, fileName, tag, safeFileName } = paletteData;
+            const { palette, fileName, tag, safeFileName, type } = paletteData;
             return (
-              <PaletteCard palette={palette} fileName={fileName} safeFileName={safeFileName} tag={tag} key={uuidv4()} />
+              <PaletteCard
+                palette={palette}
+                fileName={fileName}
+                safeFileName={safeFileName}
+                type={type}
+                tag={tag}
+                key={uuidv4()}
+              />
             );
           })}
         </Container>

@@ -8,7 +8,13 @@ const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
 
-const { PALETTE_ELEMENT_WIDTH, PALETTES_FOLDER, TMP_FOLDER, PALETTE_MAX_COLORS } = require('../constants');
+const {
+  PALETTE_ELEMENT_WIDTH,
+  PALETTES_FOLDER,
+  TMP_FOLDER,
+  PALETTE_MAX_COLORS,
+  PALETTE_PIXEL_SKIP,
+} = require('../constants');
 const stream = require('stream');
 const util = require('util');
 
@@ -100,24 +106,25 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
 
   if (fileName && !fileName.includes('svg')) {
     try {
-      const mainColor = await ColorThief.getColor(path.join(__dirname, '..', TMP_FOLDER, fileName));
+      const mainColor = await ColorThief.getColor(path.join(__dirname, '..', TMP_FOLDER, fileName), PALETTE_PIXEL_SKIP);
       const mainColorHEX = `#${convert.rgb.hex(...mainColor)}`;
       palette.mainColor = mainColorHEX;
     } catch (err) {
       debug(`Error during getting main  color  from ${fileName}`, err.message || err.stack);
-      return false;
+      return palette;
     }
 
     try {
       const paletteColors = await ColorThief.getPalette(
         path.join(__dirname, '..', TMP_FOLDER, fileName),
-        paletteMaxColors
+        paletteMaxColors,
+        PALETTE_PIXEL_SKIP
       );
       const paletteColorsHex = [...new Set(paletteColors.map((el) => `#${convert.rgb.hex(...el)}`))];
       palette.colors = paletteColorsHex;
     } catch (err) {
       debug(`Error during getting main  color from ${fileName}`, err.message || err.stack);
-      return false;
+      return palette; //returning default  palette
     }
   } else {
     const paletteColors = getColors(path.join(__dirname, '..', TMP_FOLDER, fileName));
@@ -152,6 +159,7 @@ async function getPageImagesPalettes(images = []) {
           safeFileName,
           fileName,
           palette: imagePalette,
+          type: image.type,
         });
       }
     } else {
@@ -163,6 +171,7 @@ async function getPageImagesPalettes(images = []) {
           safeFileName,
           fileName,
           palette: imagePalette,
+          type: image.type,
         });
       }
     }

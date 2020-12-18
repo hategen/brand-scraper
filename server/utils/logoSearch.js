@@ -29,7 +29,6 @@ const isValidUrl = (url) => {
    * return isValidUrl.test(url);
    */
 };
-
 const scrapePage = () => {
   let headerSelectorPart = ``;
   if (document.querySelectorAll('header').length > 0) {
@@ -43,11 +42,6 @@ const scrapePage = () => {
     () =>
       [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => ({
         type: 'og:logo',
-        url: el.getAttribute('content'),
-      })),
-    () =>
-      [...document.querySelectorAll(`meta[property="og:image"]`)].map((el) => ({
-        type: 'og:image',
         url: el.getAttribute('content'),
       })),
     () =>
@@ -96,14 +90,14 @@ const scrapePage = () => {
         type: 'img-alt/logo-class',
         url: el.getAttribute('src'),
       })),
-/*    () =>
+    () =>
       [...document.querySelectorAll(`${headerSelectorPart} a[class*="logo"]`)].map((el) => ({
         type: 'svg:image',
         data: true,
         url: el.innerHTML, // svgToDataURL
-      })),*/
+      })),
     () =>
-      [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`, `header *`])]
+      [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`])]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
         .filter((el) => el !== 'none')
         .map((el) => ({
@@ -120,7 +114,7 @@ const scrapePage = () => {
           `a[href="${location.origin}/"] img`,
         ]),
       ].map((el) => ({
-        type: 'img-nested/logo-class',
+        type: 'img-nested/home-leading',
         url: el.getAttribute('src'),
       })),
     () =>
@@ -132,13 +126,15 @@ const scrapePage = () => {
           `a[href="${location.origin}"] svg`,
           `a[href="${location.origin}/"] svg`,
         ]),
-      ].map((el) => ({
-        type: 'svg:imageRaw',
-        data: true,
-        url: el.outerHTML, // svgToDataURL
-      })),
+      ].map((el) => {
+        el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        return {
+          type: 'img-nested/home-leading-svg',
+          data: true,
+          url: el.outerHTML, // svgToDataURL
+        };
+      }),
   ];
-
   return scrapers.reduce((acc, scraperFunc) => {
     acc.push(...scraperFunc());
     return acc;
@@ -171,16 +167,13 @@ const processScrapedLogos = (logos, url) => {
       return logo;
     });
 
-  const correctLogos = uniqBy(
-    processedLogos.map((image) =>
-      !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
-        ? {
-            ...image,
-            url: `${host}${image.url}`,
-          }
-        : image
-    ),
-    'url'
+  const correctLogos = processedLogos.map((image) =>
+    !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
+      ? {
+          ...image,
+          url: `${host}${image.url}`,
+        }
+      : image
   );
 
   debug(JSON.stringify(correctLogos, null, 2));

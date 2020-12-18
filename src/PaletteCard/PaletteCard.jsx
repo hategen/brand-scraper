@@ -4,14 +4,15 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import Box from '@material-ui/core/Box';
 import CardMedia from '@material-ui/core/CardMedia';
-import CardHeader from '@material-ui/core/CardHeader';
+import Typography from '@material-ui/core/Typography';
 import { v4 as uuidv4 } from 'uuid';
 
 import { invertColor } from '../utils/color';
 
 const useStyles = makeStyles(() => ({
   root: {
-    display: 'flex',
+    overflow: 'visible',
+    margin: '10px',
   },
   details: {
     display: 'flex',
@@ -20,22 +21,27 @@ const useStyles = makeStyles(() => ({
   content: {
     display: 'flex',
   },
+  title: {
+    fontSize: 14,
+    padding: '10px 10px',
+  },
   image: {
     width: 'auto',
-    maxHeight: '100px',
+    maxHeight: '80px',
     objectFit: 'contain',
+    margin: '10px',
   },
   box: {
     display: 'flex',
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     alignItems: 'center',
     justifyContent: 'center',
     fontWeight: 'bold',
   },
 }));
 
-export function PaletteCard({ palette, safeFileName, fileName, tag }) {
+export function PaletteCard({ palette, safeFileName, fileName, tag, type }) {
   const classes = useStyles();
 
   if (!palette) {
@@ -44,16 +50,26 @@ export function PaletteCard({ palette, safeFileName, fileName, tag }) {
   const { mainColor = '#000000', colors = [] } = palette;
   const fullColorList = [mainColor, ...colors];
   return (
-    <Card className={classes.root}>
+    <Card className={classes.root} variant="outlined">
       <div className={classes.details}>
-        <CardHeader title={safeFileName || tag} />
-        <CardHeader title={fileName || tag} />
+        {type ? (
+          <Typography className={classes.title} color="textSecondary" gutterBottom>
+            {type}
+          </Typography>
+        ) : null}
+
+        <Typography className={classes.title} color="textSecondary" gutterBottom>
+          {safeFileName || tag}
+        </Typography>
+        <Typography className={classes.title} color="textSecondary" gutterBottom>
+          {fileName || tag}
+        </Typography>
         <Box className={classes.content}>
-          {safeFileName ? (
+          {safeFileName || fileName ? (
             <CardMedia
               className={classes.image}
               component="img"
-              image={`http://localhost:3007/static/${safeFileName}`}
+              image={`http://localhost:3007/static/${safeFileName || fileName}`}
               title={safeFileName}
             />
           ) : null}

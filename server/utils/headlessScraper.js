@@ -28,8 +28,7 @@ const openPage = async (browser, config) => {
   });
 
   page.setViewport(viewport);
-  await page.goto(url);
- // await page.waitFor(waitTimeout);
+  await Promise.all([page.goto(url), page.waitForNavigation({ load: ['networkidle0'] })]);
 
   return page;
 };
