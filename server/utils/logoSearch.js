@@ -143,12 +143,26 @@ const scrapePage = () => {
           `a[href="${location.href}"] img`,
         ]),
       ].map((el) => ({
-        priority: 2,
+        priority: 1,
         type: 'img-nested/home-leading',
         url: el.getAttribute('src'),
       })),
-    () =>
-      [
+    () => { // do  not  do that at home  need a better way of getting  imported svg
+      const checkSVGuse = (el) => {
+        const useTag = el.querySelector('use');
+        if (useTag) {
+          const useHref = useTag.getAttribute('href') || useTag.getAttribute('xlink:href');
+          useTag.removeAttribute('xlink:href');
+          useTag.setAttribute('href', useHref);
+          const svgShadowContainerNode = document.querySelector(`svg ${useHref}`).parentNode;
+          if (svgShadowContainerNode) {
+            const svgShadowContainerNodeContent = svgShadowContainerNode.innerHTML;
+            el.innerHTML = svgShadowContainerNodeContent + el.innerHTML;
+          }
+        }
+        return el.outerHTML;
+      };
+      return [
         ...document.querySelectorAll([
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
@@ -160,12 +174,13 @@ const scrapePage = () => {
       ].map((el) => {
         el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         return {
-          priority: 1,
+          priority: 2,
           type: 'img-nested/home-leading-svg',
           data: true,
-          url: el.outerHTML, // svgToDataURL
+          url: checkSVGuse(el), // svgToDataURL
         };
-      }),
+      });
+    },
   ];
   return scrapers.reduce((acc, scraperFunc) => {
     acc.push(...scraperFunc());
