@@ -1,5 +1,6 @@
 const debug = require('debug')('logoSearch');
 const orderBy = require('lodash/orderBy');
+const uniqBy = require('lodash/uniqBy');
 
 const findJsonLdImages = (text) => {
   const info = JSON.parse(text);
@@ -139,6 +140,7 @@ const scrapePage = () => {
           `[rel="home"] img`,
           `a[href="${location.origin}"] img`,
           `a[href="${location.origin}/"] img`,
+          `a[href="${location.href}"] img`,
         ]),
       ].map((el) => ({
         priority: 2,
@@ -153,6 +155,7 @@ const scrapePage = () => {
           `[rel="home"] svg`,
           `a[href="${location.origin}"] svg`,
           `a[href="${location.origin}/"] svg`,
+          `a[href="${location.href}"] svg`,
         ]),
       ].map((el) => {
         el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
@@ -193,6 +196,11 @@ const processScrapedLogos = (logos, url) => {
       if (logo.url && logo.url.startsWith('//')) {
         logo.url = `${parsedUrl.protocol}${logo.url}`;
       }
+
+      if (logo.type !== 'img-nested/home-leading-svg' && logo.url.endsWith('.svg')) {
+        logo.priority = logo.priority - 1;
+      }
+
       return logo;
     });
 
@@ -201,7 +209,7 @@ const processScrapedLogos = (logos, url) => {
       !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
         ? {
             ...image,
-            url: `${host}${image.url}`,
+            url: host.endsWith('/') || image.url.startsWith('/') ? `${host}${image.url}` : `${host}/${image.url}`,
           }
         : image
     ),
