@@ -41,7 +41,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function PaletteCard({ palette, safeFileName, fileName, tag, type }) {
+export function PaletteCard({ palette, safeFileName, fileName, tag, type, priority }) {
   const classes = useStyles();
 
   if (!palette) {
@@ -52,15 +52,23 @@ export function PaletteCard({ palette, safeFileName, fileName, tag, type }) {
   return (
     <Card className={classes.root} variant="outlined">
       <div className={classes.details}>
-        {type ? (
-          <Typography className={classes.title} color="textSecondary" gutterBottom>
-            {type}
-          </Typography>
-        ) : null}
+        <Box className={classes.content}>
+          {priority ? (
+            <Typography className={classes.title} color="textPrimary" gutterBottom>
+              {priority}
+            </Typography>
+          ) : null}
 
-        <Typography className={classes.title} color="textSecondary" gutterBottom>
-          {safeFileName || tag}
-        </Typography>
+          {type ? (
+            <Typography className={classes.title} color="textSecondary" gutterBottom>
+              {type}
+            </Typography>
+          ) : null}
+          <Typography className={classes.title} color="textSecondary" gutterBottom>
+            {safeFileName || tag}
+          </Typography>
+        </Box>
+
         <Typography className={classes.title} color="textSecondary" gutterBottom>
           {fileName || tag}
         </Typography>

@@ -160,6 +160,7 @@ async function getPageImagesPalettes(images = []) {
           fileName,
           palette: imagePalette,
           type: image.type,
+          priority: image.priority,
         });
       }
     } else {
@@ -172,6 +173,7 @@ async function getPageImagesPalettes(images = []) {
           fileName,
           palette: imagePalette,
           type: image.type,
+          priority: image.priority,
         });
       }
     }

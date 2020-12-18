@@ -1,3 +1,21 @@
+## to run this mess
+
+### run `yarn` root project directory
+
+### run `npm install` in `/server` directory
+
+### run `yarn start` in one terminal
+
+### run `yarn server` in another
+
+Put url into URL input and press `DO IT`
+It might take a while 
+
+Number in left top corner of  boxes  epresents the image priority. 
+The lower the number the better i think the logo is.
+
+
+
 # Getting Started with Create React App
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).

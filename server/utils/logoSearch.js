@@ -1,5 +1,5 @@
 const debug = require('debug')('logoSearch');
-const uniqBy = require('lodash/uniqBy');
+const orderBy = require('lodash/orderBy');
 
 const findJsonLdImages = (text) => {
   const info = JSON.parse(text);
@@ -42,37 +42,44 @@ const scrapePage = () => {
     () =>
       [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => ({
         type: 'og:logo',
+        priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[itemprop="logo"]`)].map((el) => ({
         type: 'meta-itemprop/logo',
+        priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`link[rel*="icon"]`)].map((el) => ({
         type: 'link-rel/icon',
+        priority: 4,
         url: el.getAttribute('href'),
         size: el.getAttribute('sizes'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[itemprop="logo"]`)].map((el) => ({
         type: 'img-itemprop/logo',
+        priority: 4,
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`meta[name*="msapplication-TileImage"]`)].map((el) => ({
         type: 'meta-name/msapplication-TileImage',
+        priority: 4,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => ({
         type: 'meta-content/logo',
+        priority: 4,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => ({
         type: 'meta-content/image',
+        priority: 4,
         url: el.getAttribute('content'),
       })),
     () =>
@@ -82,25 +89,45 @@ const scrapePage = () => {
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[alt*="logo"]`)].map((el) => ({
+        priority: 5,
         type: 'img-alt/logo',
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[class*="logo"]`)].map((el) => ({
+        priority: 4,
         type: 'img-alt/logo-class',
         url: el.getAttribute('src'),
       })),
-    () =>
+    /*    () =>
       [...document.querySelectorAll(`${headerSelectorPart} a[class*="logo"]`)].map((el) => ({
         type: 'svg:image',
         data: true,
-        url: el.innerHTML, // svgToDataURL
-      })),
+        url: el.innerHTML, // svgToDataURL seems to be useless
+      })),*/
     () =>
       [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`])]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
         .filter((el) => el !== 'none')
         .map((el) => ({
+          priority: 4,
+          type: 'css:background-image',
+          url: el, // extractURL
+        })),
+    () =>
+      [
+        ...document.querySelectorAll([
+          `[aria-label*="home"] *`,
+          `a[href="/"] *`,
+          `[rel="home"] *`,
+          `a[href="${location.origin}"] *`,
+          `a[href="${location.origin}/"] *`,
+        ]),
+      ]
+        .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
+        .filter((el) => el !== 'none')
+        .map((el) => ({
+          priority: 3,
           type: 'css:background-image',
           url: el, // extractURL
         })),
@@ -114,6 +141,7 @@ const scrapePage = () => {
           `a[href="${location.origin}/"] img`,
         ]),
       ].map((el) => ({
+        priority: 2,
         type: 'img-nested/home-leading',
         url: el.getAttribute('src'),
       })),
@@ -129,6 +157,7 @@ const scrapePage = () => {
       ].map((el) => {
         el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
         return {
+          priority: 1,
           type: 'img-nested/home-leading-svg',
           data: true,
           url: el.outerHTML, // svgToDataURL
@@ -167,13 +196,17 @@ const processScrapedLogos = (logos, url) => {
       return logo;
     });
 
-  const correctLogos = processedLogos.map((image) =>
-    !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
-      ? {
-          ...image,
-          url: `${host}${image.url}`,
-        }
-      : image
+  const correctLogos = orderBy(
+    processedLogos.map((image) =>
+      !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
+        ? {
+            ...image,
+            url: `${host}${image.url}`,
+          }
+        : image
+    ),
+    ['priority'],
+    ['asc']
   );
 
   debug(JSON.stringify(correctLogos, null, 2));

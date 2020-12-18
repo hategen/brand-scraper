@@ -1,14 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/jsLibraryMappings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/yarn.lock" afterDir="false" />
+    <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="added prioritization">
       <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/App.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/App.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" beforeDir="false" afterPath="$PROJECT_DIR$/src/PaletteCard/PaletteCard.jsx" afterDir="false" />
@@ -88,7 +85,7 @@
       <workItem from="1608215173234" duration="11610000" />
       <workItem from="1608276349176" duration="4350000" />
       <workItem from="1608286439743" duration="4393000" />
-      <workItem from="1608292546346" duration="5059000" />
+      <workItem from="1608292546346" duration="6456000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -125,7 +122,14 @@
       <option name="project" value="LOCAL" />
       <updated>1608224407865</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="- improved grabbing svg embedded into  page as a tag&#10;- improved selection of adequate elements&#10;- reduced color palette - but to 2 colors to  reduce  colorspace errors">
+      <created>1608298840289</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1608298840289</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -137,7 +141,8 @@
     <MESSAGE value=" - changed teh way of tags scraping &#10; - cheerio is not used anymore" />
     <MESSAGE value="- removed  cheerio dependency&#10;-minor style fixes" />
     <MESSAGE value="- removed  cheerio dependency&#10;- improved approach for logo scraping" />
-    <option name="LAST_COMMIT_MESSAGE" value="- removed  cheerio dependency&#10;- improved approach for logo scraping" />
+    <MESSAGE value="- improved grabbing svg embedded into  page as a tag&#10;- improved selection of adequate elements&#10;- reduced color palette - but to 2 colors to  reduce  colorspace errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="- improved grabbing svg embedded into  page as a tag&#10;- improved selection of adequate elements&#10;- reduced color palette - but to 2 colors to  reduce  colorspace errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -164,7 +169,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>136</line>
+          <line>165</line>
           <option name="timeStamp" value="48" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
