@@ -1,10 +1,10 @@
 const puppeteer = require('puppeteer');
 const debug = require('debug')('headlessScraper');
-const { DEFAULT_VIEWPORT, DEFAULT_PAGE_WAIT_TIMEOUT } = require('../constants');
+const { DEFAULT_VIEWPORT, DEFAULT_PAGE_WAIT_TIMEOUT, OVERRIDE_USER_AGENT, USER_AGENT } = require('../constants');
 
 const openBrowser = async () => {
   debug('Browser open START');
-  const browser = await puppeteer.launch();
+  const browser = await puppeteer.launch({ headless: true });
   debug('Browser open END');
   return browser;
 };
@@ -28,7 +28,12 @@ const openPage = async (browser, config) => {
   });
 
   page.setViewport(viewport);
-  await Promise.all([page.goto(url), page.waitForNavigation({ load: ['networkidle0'] })]);
+  await Promise.all([
+    page.goto(url),
+    page.waitForNavigation({
+      waitUntil: ['networkidle2', 'load'],
+    }),
+  ]);
 
   return page;
 };
@@ -36,7 +41,13 @@ const openPage = async (browser, config) => {
 const init = async function (config) {
   const browser = await openBrowser();
   const page = await openPage(browser, config);
-  return { page, browser };
+  if (OVERRIDE_USER_AGENT) {
+    await page.setUserAgent(USER_AGENT);
+  }
+  return {
+    page,
+    browser,
+  };
 };
 
 const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFuncArgs) {

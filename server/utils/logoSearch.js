@@ -31,6 +31,22 @@ const isValidUrl = (url) => {
    */
 };
 const scrapePage = () => {
+  // do  not  do that at home  need a better way of getting  imported svg
+  const checkSVGuse = (el) => {
+    const useTag = el.querySelector('use');
+    if (useTag) {
+      const useHref = useTag.getAttribute('href') || useTag.getAttribute('xlink:href');
+      useTag.removeAttribute('xlink:href');
+      useTag.setAttribute('href', useHref);
+      const svgShadowContainerNode = document.querySelector(`svg ${useHref}`).parentNode;
+      if (svgShadowContainerNode) {
+        const svgShadowContainerNodeContent = svgShadowContainerNode.innerHTML;
+        el.innerHTML = svgShadowContainerNodeContent + el.innerHTML;
+      }
+    }
+    return el.outerHTML;
+  };
+
   let headerSelectorPart = ``;
   if (document.querySelectorAll('header').length > 0) {
     headerSelectorPart = `header `;
@@ -38,6 +54,8 @@ const scrapePage = () => {
     headerSelectorPart = `.${[...document.querySelectorAll('[class*="header"]')[0].classList].filter((x) =>
       x.toLowerCase().includes('header')
     )}`;
+  } else if (document.querySelectorAll('[id*="header"]').length > 0) {
+    headerSelectorPart = `#${[...document.querySelectorAll('[id*="header"]')][0].getAttribute('id')}`;
   }
   const scrapers = [
     () =>
@@ -100,6 +118,12 @@ const scrapePage = () => {
         type: 'img-alt/logo-class',
         url: el.getAttribute('src'),
       })),
+    () =>
+      [...document.querySelectorAll(`${headerSelectorPart} img[src*="logo"]`)].map((el) => ({
+        priority: 4,
+        type: 'img-src/logo-class',
+        url: el.getAttribute('src'),
+      })),
     /*    () =>
       [...document.querySelectorAll(`${headerSelectorPart} a[class*="logo"]`)].map((el) => ({
         type: 'svg:image',
@@ -115,6 +139,24 @@ const scrapePage = () => {
           type: 'css:background-image',
           url: el, // extractURL
         })),
+    //potentially dangerous due to  very  loose match rules
+   /* () =>
+      [...document.querySelectorAll([`[class*="logo"] img`, `#logo img`])].map((el) => ({
+        priority: 1,
+        type: 'XXimg-nested/logo-class',
+        url: el.getAttribute('src'),
+      })),
+    () =>
+      [...document.querySelectorAll([`[class*="logo"] svg`, `#logo svg`])].map((el) => {
+        el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
+        console.log('XXXXXXX', el);
+        return {
+          priority: 2,
+          type: 'XXsvg-nested/logo-class',
+          data: true,
+          url: checkSVGuse(el), // svgToDataURL
+        };
+      }),*/
     () =>
       [
         ...document.querySelectorAll([
@@ -123,12 +165,15 @@ const scrapePage = () => {
           `[rel="home"] *`,
           `a[href="${location.origin}"] *`,
           `a[href="${location.origin}/"] *`,
+          `a[href^="${location.origin}/?"] *`,
+          `a[href="${location.href}"] *`,
+          `a[href="${location.pathname}"] *`,
         ]),
       ]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
         .filter((el) => el !== 'none')
         .map((el) => ({
-          priority: 3,
+          priority: 2,
           type: 'css:background-image',
           url: el, // extractURL
         })),
@@ -137,39 +182,31 @@ const scrapePage = () => {
         ...document.querySelectorAll([
           `[aria-label*="home"] img`,
           `a[href="/"] img`,
+          `a[href^="/?"] img`,
           `[rel="home"] img`,
           `a[href="${location.origin}"] img`,
           `a[href="${location.origin}/"] img`,
+          `a[href^="${location.origin}/?"] img`,
           `a[href="${location.href}"] img`,
+          `a[href="${location.pathname}"] img`,
         ]),
       ].map((el) => ({
         priority: 1,
         type: 'img-nested/home-leading',
         url: el.getAttribute('src'),
       })),
-    () => { // do  not  do that at home  need a better way of getting  imported svg
-      const checkSVGuse = (el) => {
-        const useTag = el.querySelector('use');
-        if (useTag) {
-          const useHref = useTag.getAttribute('href') || useTag.getAttribute('xlink:href');
-          useTag.removeAttribute('xlink:href');
-          useTag.setAttribute('href', useHref);
-          const svgShadowContainerNode = document.querySelector(`svg ${useHref}`).parentNode;
-          if (svgShadowContainerNode) {
-            const svgShadowContainerNodeContent = svgShadowContainerNode.innerHTML;
-            el.innerHTML = svgShadowContainerNodeContent + el.innerHTML;
-          }
-        }
-        return el.outerHTML;
-      };
+    () => {
       return [
         ...document.querySelectorAll([
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
+          `a[href^="/?"] svg`,
           `[rel="home"] svg`,
           `a[href="${location.origin}"] svg`,
           `a[href="${location.origin}/"] svg`,
+          `a[href^="${location.origin}/?"] svg`,
           `a[href="${location.href}"] svg`,
+          `a[href="${location.pathname}"] svg`,
         ]),
       ].map((el) => {
         el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
