@@ -41,7 +41,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-export function PaletteCard({ palette, safeFileName, fileName, tag, type, priority }) {
+export function PaletteCard({ palette, safeFileName, fileName, tag, type, priority, weight }) {
   const classes = useStyles();
 
   if (!palette) {
@@ -64,8 +64,13 @@ export function PaletteCard({ palette, safeFileName, fileName, tag, type, priori
               {type}
             </Typography>
           ) : null}
+          {weight ? (
+            <Typography className={classes.title} color="textSecondary" gutterBottom>
+              {weight}
+            </Typography>
+          ) : null}
           <Typography className={classes.title} color="textSecondary" gutterBottom>
-            {safeFileName || tag}
+            {safeFileName || palette.tag}
           </Typography>
         </Box>
 

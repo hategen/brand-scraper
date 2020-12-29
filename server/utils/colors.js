@@ -7,6 +7,7 @@ const fs = require('fs');
 const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
+const Vibrant = require('node-vibrant');
 
 const {
   PALETTE_ELEMENT_WIDTH,
@@ -62,7 +63,22 @@ const saveImage = async (url, fileName = '') => {
   }
 };
 
-const getPalettesFromTags = (props = {}, tag) => {
+const rgbArrayToHex = (colors = []) => {
+  const colorsArray = Array.isArray(colors) ? colors : [colors];
+  const rgbColorsArray = colorsArray.map(rgbToHex);
+  return [...new Set(rgbColorsArray)];
+};
+
+const rgbToHex = (color = '') => {
+  const colorArray = color
+    .replace(/rgba|rgb|\(|\)|\s/gi, '')
+    .split(',')
+    .map(parseFloat);
+
+  return `#${convert.rgb.hex(...colorArray)}`;
+};
+
+const getPalettesFromTagsOLd = (props = {}, tag) => {
   const palettes = [];
   Object.keys(props).forEach((key) => {
     props[key] = rgbArrayToHex(props[key]);
@@ -70,6 +86,26 @@ const getPalettesFromTags = (props = {}, tag) => {
       palette: { colors: props[key] },
       tag: `${tag}_${key}`,
     });
+  });
+  return palettes;
+};
+
+const getPalettesFromTags = (tagProps = [], tag) => {
+  const palettes = [];
+  tagProps.forEach((tagColors) => {
+    const palette = {
+      palette: { colors: [] },
+      tag: `${tag}`,
+      weight: tagColors.weight,
+    };
+    delete tagColors.weight;
+
+    Object.keys(tagColors).forEach((tagColorProperty) => {
+      palette.palette.colors.push(rgbToHex(tagColors[tagColorProperty]));
+      palette.palette.tag = `${palette.palette.tag}_${tagColorProperty}`;
+    });
+
+    palettes.push(palette);
   });
   return palettes;
 };
@@ -134,16 +170,6 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
   }
 
   return palette;
-};
-
-const rgbArrayToHex = (colors) => {
-  const rgbColorsArray = colors.map((color) =>
-    color
-      .replace(/rgba|rgb|\(|\)|\s/gi, '')
-      .split(',')
-      .map(parseFloat)
-  );
-  return [...new Set(rgbColorsArray.map((el) => `#${convert.rgb.hex(...el)}`))];
 };
 
 async function getPageImagesPalettes(images = []) {

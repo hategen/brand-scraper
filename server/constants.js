@@ -1,9 +1,11 @@
 module.exports = {
   OVERRIDE_USER_AGENT: false,
-  USER_AGENT: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
+  MAKE_FULL_SCREENSHOT: false,
+  USER_AGENT:
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
   PALETTE_ELEMENT_WIDTH: 100,
-  PALETTE_MAX_COLORS: 2,
-  PALETTE_PIXEL_SKIP: 1,
+  PALETTE_MAX_COLORS: 5,
+  PALETTE_PIXEL_SKIP: 5,
   PALETTES_FOLDER: 'palettes',
   TMP_FOLDER: 'tmp',
   SELECTORS: {
@@ -15,7 +17,9 @@ module.exports = {
         '.btn',
         `[class*="btn"]`,
         `[class*="button"]`,
-        `[type="submit]"`,
+        `[type="submit"]`,
+        `[type="button"]`,
+        `[class*="Button"]`,
       ],
       properties: ['color', 'background-color'],
     },

@@ -92,7 +92,7 @@ const scrapePage = () => {
     () =>
       [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => ({
         type: 'meta-content/logo',
-        priority: 4,
+        priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
@@ -108,19 +108,19 @@ const scrapePage = () => {
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[alt*="logo"]`)].map((el) => ({
-        priority: 5,
+        priority: 3,
         type: 'img-alt/logo',
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[class*="logo"]`)].map((el) => ({
-        priority: 4,
+        priority: 3,
         type: 'img-alt/logo-class',
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[src*="logo"]`)].map((el) => ({
-        priority: 4,
+        priority: 3,
         type: 'img-src/logo-class',
         url: el.getAttribute('src'),
       })),
@@ -140,7 +140,7 @@ const scrapePage = () => {
           url: el, // extractURL
         })),
     //potentially dangerous due to  very  loose match rules
-   /* () =>
+    /* () =>
       [...document.querySelectorAll([`[class*="logo"] img`, `#logo img`])].map((el) => ({
         priority: 1,
         type: 'XXimg-nested/logo-class',
@@ -168,6 +168,11 @@ const scrapePage = () => {
           `a[href^="${location.origin}/?"] *`,
           `a[href="${location.href}"] *`,
           `a[href="${location.pathname}"] *`,
+          `a[href="${location.origin}"]`,
+          `a[href="${location.origin}/"]`,
+          `a[href^="${location.origin}/?"]`,
+          `a[href="${location.href}"]`,
+          `a[href="${location.pathname}"]`,
         ]),
       ]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))

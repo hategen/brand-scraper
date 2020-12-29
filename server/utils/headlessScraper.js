@@ -1,5 +1,6 @@
 const puppeteer = require('puppeteer');
 const debug = require('debug')('headlessScraper');
+
 const { DEFAULT_VIEWPORT, DEFAULT_PAGE_WAIT_TIMEOUT, OVERRIDE_USER_AGENT, USER_AGENT } = require('../constants');
 
 const openBrowser = async () => {
@@ -31,7 +32,7 @@ const openPage = async (browser, config) => {
   await Promise.all([
     page.goto(url),
     page.waitForNavigation({
-      waitUntil: ['networkidle2', 'load'],
+      waitUntil: ['load'],
     }),
   ]);
 
@@ -77,7 +78,7 @@ const cleanPage = () => {
   }
 };
 
-const getPropsBySelector = (selectors, properties) => {
+const getPropsBySelector_old = (selectors, properties) => {
   const obj = properties.reduce((acc, el) => {
     if (!acc.hasOwnProperty(el)) {
       acc[el] = new Set();
@@ -100,6 +101,29 @@ const getPropsBySelector = (selectors, properties) => {
     obj[key] = [...obj[key]];
   });
   return obj;
+};
+
+const getPropsBySelector = (selectors, properties) => {
+  const colors = [];
+
+  selectors.forEach((selector) => {
+    const elements = [...document.querySelectorAll(selector)];
+    elements.forEach((el) => {
+      el.focus();
+      const computedStyle = window.getComputedStyle(el);
+      const elementColors = {};
+      properties.forEach((property) => {
+        const value = computedStyle.getPropertyValue(property);
+        elementColors[property] = value;
+      });
+
+      if (elementColors['background-color'] !== `rgba(0, 0, 0, 0)`) {
+        colors.push(elementColors);
+      }
+    });
+  });
+
+  return colors;
 };
 
 module.exports = {
