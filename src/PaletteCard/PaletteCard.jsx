@@ -53,7 +53,7 @@ export function PaletteCard({ palette, safeFileName, fileName, tag, type, priori
     <Card className={classes.root} variant="outlined">
       <div className={classes.details}>
         <Box className={classes.content}>
-          {priority ? (
+          {Number.parseInt(priority, 10) >= 0 ? (
             <Typography className={classes.title} color="textPrimary" gutterBottom>
               {priority}
             </Typography>

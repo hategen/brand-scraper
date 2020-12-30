@@ -1,10 +1,15 @@
 const rimraf = require('rimraf');
 const path = require('path');
-const { uniqWith, isEqual } = require('lodash');
 
 const { scrapePage, processScrapedLogos } = require('./utils/logoSearch');
 const { init, injectCodeIntoPage, closeBrowser, cleanPage, getPropsBySelector } = require('./utils/headlessScraper');
-const { getPageImagesPalettes, getPalette, savePalette, getPalettesFromTags } = require('./utils/colors');
+const {
+  getPageImagesPalettes,
+  getPalette,
+  savePalette,
+  getPalettesFromTags,
+  getUniqueButtonsColors,
+} = require('./utils/colors');
 
 const { PALETTES_FOLDER, TMP_FOLDER, SELECTORS, MAKE_FULL_SCREENSHOT } = require('./constants');
 
@@ -55,12 +60,7 @@ async function scrape(url) {
     SELECTORS.buttons.properties
   );
 
-  const uniquebuttonColors = uniqWith(buttonColors, isEqual);
-
-  uniquebuttonColors.forEach((el) => {
-    const count = buttonColors.filter((nuel) => isEqual(nuel, el)).length;
-    el.weight = count;
-  });
+  const uniquebuttonColors = getUniqueButtonsColors(buttonColors);
   const buttonsPalettes = getPalettesFromTags(uniquebuttonColors, 'buttons');
   await closeBrowser(browser);
   return [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes];

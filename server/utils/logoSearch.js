@@ -179,7 +179,7 @@ const scrapePage = () => {
         .filter((el) => el !== 'none')
         .map((el) => ({
           priority: 2,
-          type: 'css:background-image',
+          type: 'css:background-image/home-leading',
           url: el, // extractURL
         })),
     () =>
@@ -234,6 +234,7 @@ const logoProcessors = {
   'svg:image': svgToDataURL,
   'json-ld-logo': findJsonLdImages,
   'css:background-image': extractURL,
+  'css:background-image/home-leading': extractURL,
 };
 
 const processScrapedLogos = (logos, url) => {
@@ -261,17 +262,20 @@ const processScrapedLogos = (logos, url) => {
       return logo;
     });
 
-  const correctLogos = orderBy(
-    processedLogos.map((image) =>
-      !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
-        ? {
-            ...image,
-            url: host.endsWith('/') || image.url.startsWith('/') ? `${host}${image.url}` : `${host}/${image.url}`,
-          }
-        : image
+  const correctLogos = uniqBy(
+    orderBy(
+      processedLogos.map((image) =>
+        !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
+          ? {
+              ...image,
+              url: host.endsWith('/') || image.url.startsWith('/') ? `${host}${image.url}` : `${host}/${image.url}`,
+            }
+          : image
+      ),
+      ['priority'],
+      ['asc']
     ),
-    ['priority'],
-    ['asc']
+    'url'
   );
 
   debug(JSON.stringify(correctLogos, null, 2));

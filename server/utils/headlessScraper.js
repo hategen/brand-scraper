@@ -36,6 +36,8 @@ const openPage = async (browser, config) => {
     }),
   ]);
 
+  await page.waitFor(500);
+
   return page;
 };
 

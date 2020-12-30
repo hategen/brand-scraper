@@ -7,6 +7,7 @@ const fs = require('fs');
 const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
+const { uniqWith, isEqual } = require('lodash');
 const Vibrant = require('node-vibrant');
 
 const {
@@ -76,18 +77,6 @@ const rgbToHex = (color = '') => {
     .map(parseFloat);
 
   return `#${convert.rgb.hex(...colorArray)}`;
-};
-
-const getPalettesFromTagsOLd = (props = {}, tag) => {
-  const palettes = [];
-  Object.keys(props).forEach((key) => {
-    props[key] = rgbArrayToHex(props[key]);
-    palettes.push({
-      palette: { colors: props[key] },
-      tag: `${tag}_${key}`,
-    });
-  });
-  return palettes;
 };
 
 const getPalettesFromTags = (tagProps = [], tag) => {
@@ -207,10 +196,21 @@ async function getPageImagesPalettes(images = []) {
   return palettes;
 }
 
+const getUniqueButtonsColors = (buttonColors) => {
+  const uniquebuttonColors = uniqWith(buttonColors, isEqual);
+
+  uniquebuttonColors.forEach((el) => {
+    const count = buttonColors.filter((nuel) => isEqual(nuel, el)).length;
+    el.weight = count;
+  });
+  return uniquebuttonColors;
+};
+
 module.exports = {
   getPageImagesPalettes,
   rgbArrayToHex,
   getPalette,
   savePalette,
   getPalettesFromTags,
+  getUniqueButtonsColors,
 };
