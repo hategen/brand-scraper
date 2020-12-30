@@ -7,8 +7,9 @@ const fs = require('fs');
 const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
-const { uniqWith, isEqual } = require('lodash');
-const Vibrant = require('node-vibrant');
+const { uniqWith, isEqual, min, max, sum } = require('lodash');
+
+const color = require('color');
 
 const {
   PALETTE_ELEMENT_WIDTH,
@@ -20,7 +21,33 @@ const {
 const stream = require('stream');
 const util = require('util');
 
+const getRange = (data) => Math.abs(min(data) - max(data));
+const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
+const reldist = (a, b) => (b - a) / b;
+
+const mean = (data = []) => sum(data) / data.length;
+
+const gradients = (data) =>
+  data.reduce((acc, el, idx, arr) => {
+    if (idx > 0) {
+      acc.push(el - arr[idx - 1]);
+    }
+    return acc;
+  }, []);
+
 const finished = util.promisify(stream.finished);
+
+const getLuminosity = (hexColor) => color(hexColor).luminosity();
+
+const getPaletteDistributionScore = (colors = [], criteria, distance = reldist) => {
+  const dist = colors.map(criteria).sort();
+
+  const ideal = getRange(dist) / (dist.length - 1 || 1);
+
+  const score = (x) => clamp(1 - distance(x, ideal), 0, 1);
+
+  return mean(gradients(dist).map(score));
+};
 
 const saveSVGData = async (data) => {
   const safeFileName = `${uuid()}.svg`;
@@ -176,6 +203,7 @@ async function getPageImagesPalettes(images = []) {
           palette: imagePalette,
           type: image.type,
           priority: image.priority,
+          size: image.size || undefined,
         });
       }
     } else {
@@ -213,4 +241,6 @@ module.exports = {
   savePalette,
   getPalettesFromTags,
   getUniqueButtonsColors,
+  getPaletteDistributionScore,
+  getLuminosity,
 };

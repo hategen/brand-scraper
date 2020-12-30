@@ -1,6 +1,7 @@
 const debug = require('debug')('logoSearch');
-const orderBy = require('lodash/orderBy');
-const uniqBy = require('lodash/uniqBy');
+const { orderBy, uniqBy, minBy, get } = require('lodash');
+const { LOGO_TYPES, ICON_TYPES } = require('../constants');
+const { getPaletteDistributionScore, getLuminosity } = require('./colors');
 
 const findJsonLdImages = (text) => {
   const info = JSON.parse(text);
@@ -16,6 +17,32 @@ const svgToDataURL = (svgStr) => {
   }
 };
 
+const getBestLogo = (logoPalettes = []) => {
+  const logos = logoPalettes.filter((palette) => {
+    return LOGO_TYPES.includes(palette.type);
+  });
+  const minPriority = get(minBy(logos, 'priority'), 'priority');
+
+  const minRatingLogos = logos.filter((logo) => logo.priority === minPriority);
+
+  //const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
+  //just get first one now
+  return minRatingLogos[0];
+};
+
+const getBestIcon = (logoPalettes = []) => {
+  const logos = logoPalettes.filter((palette) => {
+    return ICON_TYPES.includes(palette.type);
+  });
+  const minPriority = get(minBy(logos, 'priority'), 'priority');
+
+  const minRatingLogos = logos.filter((logo) => logo.priority === minPriority);
+
+  //const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
+  //just get first one now
+  return minRatingLogos[0];
+};
+
 const extractURL = (cssURl) => /(?:\(['"]?)(.*?)(?:['"]?\))/.exec(cssURl)[1];
 
 const isValidUrl = (url) => {
@@ -25,10 +52,6 @@ const isValidUrl = (url) => {
   } catch (e) {
     return false;
   }
-  /*
-   * const isValidUrl = /^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$/;
-   * return isValidUrl.test(url);
-   */
 };
 const scrapePage = () => {
   // do  not  do that at home  need a better way of getting  imported svg
@@ -124,12 +147,6 @@ const scrapePage = () => {
         type: 'img-src/logo-class',
         url: el.getAttribute('src'),
       })),
-    /*    () =>
-      [...document.querySelectorAll(`${headerSelectorPart} a[class*="logo"]`)].map((el) => ({
-        type: 'svg:image',
-        data: true,
-        url: el.innerHTML, // svgToDataURL seems to be useless
-      })),*/
     () =>
       [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`])]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
@@ -139,30 +156,13 @@ const scrapePage = () => {
           type: 'css:background-image',
           url: el, // extractURL
         })),
-    //potentially dangerous due to  very  loose match rules
-    /* () =>
-      [...document.querySelectorAll([`[class*="logo"] img`, `#logo img`])].map((el) => ({
-        priority: 1,
-        type: 'XXimg-nested/logo-class',
-        url: el.getAttribute('src'),
-      })),
-    () =>
-      [...document.querySelectorAll([`[class*="logo"] svg`, `#logo svg`])].map((el) => {
-        el.setAttribute('xmlns', 'http://www.w3.org/2000/svg');
-        console.log('XXXXXXX', el);
-        return {
-          priority: 2,
-          type: 'XXsvg-nested/logo-class',
-          data: true,
-          url: checkSVGuse(el), // svgToDataURL
-        };
-      }),*/
     () =>
       [
         ...document.querySelectorAll([
           `[aria-label*="home"] *`,
           `a[href="/"] *`,
           `[rel="home"] *`,
+          `a[href="#/"] *`,
           `a[href="${location.origin}"] *`,
           `a[href="${location.origin}/"] *`,
           `a[href^="${location.origin}/?"] *`,
@@ -187,6 +187,7 @@ const scrapePage = () => {
         ...document.querySelectorAll([
           `[aria-label*="home"] img`,
           `a[href="/"] img`,
+          `a[href="#/"] img`,
           `a[href^="/?"] img`,
           `[rel="home"] img`,
           `a[href="${location.origin}"] img`,
@@ -205,6 +206,7 @@ const scrapePage = () => {
         ...document.querySelectorAll([
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
+          `a[href="#/"] svg`,
           `a[href^="/?"] svg`,
           `[rel="home"] svg`,
           `a[href="${location.origin}"] svg`,
@@ -237,6 +239,34 @@ const logoProcessors = {
   'css:background-image/home-leading': extractURL,
 };
 
+const adjustWeights = (logoPalettes) => {
+  logoPalettes.forEach((logo) => {
+    if (logo.type !== 'img-nested/home-leading-svg' && logo.fileName.endsWith('.svg')) {
+      logo.priority = logo.priority - 1;
+    }
+    if (LOGO_TYPES.includes(logo.type) && !logo.palette) {
+      logo.priority = logo.priority + 1;
+    }
+
+    if (LOGO_TYPES.includes(logo.type) && logo.palette && (!logo.palette.colors || logo.palette.colors.length === 0)) {
+      logo.priority = logo.priority + 1;
+    }
+
+    if (logo.palette && logo.palette.colors.length === 1 && ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])) {
+      logo.priority = logo.priority + 1;
+    }
+    if (logo.palette && logo.palette.mainColor && ['#000000', '#ffffff'].includes(logo.palette.mainColor)) {
+      logo.priority = logo.priority + 1;
+    }
+
+    if (ICON_TYPES.includes(logo.type) && logo.size && !logo.fileName.includes('apple-touch-icon')) {
+      const size = Number.parseInt(logo.size.split('x'), 10) || 0;
+      logo.priority = logo.priority - Math.round(size / 16);
+    }
+  });
+
+  return orderBy(logoPalettes, ['priority'], ['asc']);
+};
 const processScrapedLogos = (logos, url) => {
   const parsedUrl = new URL(url);
   const host = `${parsedUrl.protocol}//${parsedUrl.host}`;
@@ -249,14 +279,10 @@ const processScrapedLogos = (logos, url) => {
       }
       return logo;
     })
-    .filter((logo) => logo.url)
+    .filter((logo) => logo.url && !logo.url.toLowerCase().includes('sprite'))
     .map((logo) => {
       if (logo.url && logo.url.startsWith('//')) {
         logo.url = `${parsedUrl.protocol}${logo.url}`;
-      }
-
-      if (logo.type !== 'img-nested/home-leading-svg' && logo.url.endsWith('.svg')) {
-        logo.priority = logo.priority - 1;
       }
 
       return logo;
@@ -285,4 +311,7 @@ const processScrapedLogos = (logos, url) => {
 module.exports = {
   scrapePage,
   processScrapedLogos,
+  getBestLogo,
+  getBestIcon,
+  adjustWeights,
 };

@@ -1,7 +1,9 @@
 const rimraf = require('rimraf');
 const path = require('path');
 
-const { scrapePage, processScrapedLogos } = require('./utils/logoSearch');
+const { get } = require('lodash');
+const { scrapePage, processScrapedLogos, getBestLogo, getBestIcon, adjustWeights } = require('./utils/logoSearch');
+const { composePalette } = require('./utils/paletteComposer');
 const { init, injectCodeIntoPage, closeBrowser, cleanPage, getPropsBySelector } = require('./utils/headlessScraper');
 const {
   getPageImagesPalettes,
@@ -47,8 +49,7 @@ async function scrape(url) {
    * const ls = new LogoSearch(page, url);
    */
   const logos = processScrapedLogos(await injectCodeIntoPage(page, scrapePage), url);
-  const logoPalettes = await getPageImagesPalettes(logos);
-
+  const logoPalettes = adjustWeights(await getPageImagesPalettes(logos));
   // removing unneeeded elements from page
   await injectCodeIntoPage(page, cleanPage);
   const screenshotPalettes = await getScreenshotPalette(page);
@@ -63,7 +64,16 @@ async function scrape(url) {
   const uniquebuttonColors = getUniqueButtonsColors(buttonColors);
   const buttonsPalettes = getPalettesFromTags(uniquebuttonColors, 'buttons');
   await closeBrowser(browser);
-  return [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes];
+
+  const bestlogo = getBestLogo(logoPalettes);
+  const bestIcon = getBestIcon(logoPalettes);
+
+  const suggestedPalette = composePalette(bestlogo, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
+  suggestedPalette;
+  return {
+    rawPalettes: [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes],
+    suggestions: [ bestlogo, bestIcon ],
+  };
 }
 
 module.exports = { scrape };

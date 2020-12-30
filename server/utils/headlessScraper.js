@@ -80,31 +80,6 @@ const cleanPage = () => {
   }
 };
 
-const getPropsBySelector_old = (selectors, properties) => {
-  const obj = properties.reduce((acc, el) => {
-    if (!acc.hasOwnProperty(el)) {
-      acc[el] = new Set();
-    }
-    return acc;
-  }, {});
-
-  selectors.forEach((selector) => {
-    const elements = [...document.querySelectorAll(selector)];
-    elements.forEach((el) => {
-      el.focus();
-      const computedStyle = window.getComputedStyle(el);
-      properties.forEach((property) => {
-        obj[property].add(computedStyle.getPropertyValue(property));
-      });
-    });
-  });
-
-  Object.keys(obj).forEach((key) => {
-    obj[key] = [...obj[key]];
-  });
-  return obj;
-};
-
 const getPropsBySelector = (selectors, properties) => {
   const colors = [];
 

@@ -8,6 +8,20 @@ module.exports = {
   PALETTE_PIXEL_SKIP: 5,
   PALETTES_FOLDER: 'palettes',
   TMP_FOLDER: 'tmp',
+  LOGO_TYPES: [
+    'css:background-image',
+    'css:background-image/home-leading',
+    'img-nested/home-leading',
+    'img-nested/home-leading-svg',
+    'img-src/logo-class',
+    'img-alt/logo-class',
+    'img-alt/logo',
+    'meta-content/image',
+    'json-ld-logo',
+    'img-itemprop/logo',
+    'og:logo',
+  ],
+  ICON_TYPES: ['link-rel/icon'],
   SELECTORS: {
     buttons: {
       selectors: [
