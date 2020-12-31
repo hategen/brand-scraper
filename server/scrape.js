@@ -1,3 +1,4 @@
+const debug = require('debug')('scrape');
 const rimraf = require('rimraf');
 const path = require('path');
 
@@ -68,11 +69,18 @@ async function scrape(url) {
   const bestlogo = getBestLogo(logoPalettes);
   const bestIcon = getBestIcon(logoPalettes);
 
-  const suggestedPalette = composePalette(bestlogo, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
-  suggestedPalette;
+  const suggestedLogos = [];
+
+  bestlogo && suggestedLogos.push(bestlogo);
+  bestIcon && suggestedLogos.push(bestIcon);
+  try {
+    const suggestedPalette = composePalette(bestlogo, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
+  } catch (e) {
+    debug(e);
+  }
   return {
     rawPalettes: [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes],
-    suggestions: [ bestlogo, bestIcon ],
+    suggestions: suggestedLogos,
   };
 }
 

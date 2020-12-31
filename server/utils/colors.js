@@ -8,8 +8,65 @@ const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
 const { uniqWith, isEqual, min, max, sum } = require('lodash');
+const { DELTAE94_DIFF_STATUS } = require('../constants.js');
+const Vibrant = require('node-vibrant');
 
 const color = require('color');
+
+const deltaE94 = (hex1, hex2) => {
+  const lab1 = color(hex1).lab().color;
+  const lab2 = color(hex2).lab().color;
+  const WEIGHT_L = 1;
+  const WEIGHT_C = 1;
+  const WEIGHT_H = 1;
+  const L1 = lab1[0];
+  const a1 = lab1[1];
+  const b1 = lab1[2];
+  const L2 = lab2[0];
+  const a2 = lab2[1];
+  const b2 = lab2[2];
+  const dL = L1 - L2;
+  const da = a1 - a2;
+  const db = b1 - b2;
+  const xC1 = Math.sqrt(a1 * a1 + b1 * b1);
+  const xC2 = Math.sqrt(a2 * a2 + b2 * b2);
+  let xDL = L2 - L1;
+  let xDC = xC2 - xC1;
+  const xDE = Math.sqrt(dL * dL + da * da + db * db);
+  let xDH =
+    Math.sqrt(xDE) > Math.sqrt(Math.abs(xDL)) + Math.sqrt(Math.abs(xDC))
+      ? Math.sqrt(xDE * xDE - xDL * xDL - xDC * xDC)
+      : 0;
+  const xSC = 1 + 0.045 * xC1;
+  const xSH = 1 + 0.015 * xC1;
+  xDL /= WEIGHT_L;
+  xDC /= WEIGHT_C * xSC;
+  xDH /= WEIGHT_H * xSH;
+  return Math.sqrt(xDL * xDL + xDC * xDC + xDH * xDH);
+};
+
+const getColorDiffStatus = (d) => {
+  if (d < DELTAE94_DIFF_STATUS.NA) {
+    return 'N/A';
+  }
+  // Not perceptible by human eyes
+  if (d <= DELTAE94_DIFF_STATUS.PERFECT) {
+    return 'Perfect';
+  }
+  // Perceptible through close observation
+  if (d <= DELTAE94_DIFF_STATUS.CLOSE) {
+    return 'Close';
+  }
+  // Perceptible at a glance
+  if (d <= DELTAE94_DIFF_STATUS.GOOD) {
+    return 'Good';
+  }
+  // Colors are more similar than opposite
+  if (d < DELTAE94_DIFF_STATUS.SIMILAR) {
+    return 'Similar';
+  }
+  return 'Wrong';
+};
 
 const {
   PALETTE_ELEMENT_WIDTH,
@@ -18,6 +75,7 @@ const {
   PALETTE_MAX_COLORS,
   PALETTE_PIXEL_SKIP,
 } = require('../constants');
+
 const stream = require('stream');
 const util = require('util');
 
@@ -26,7 +84,7 @@ const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
 const reldist = (a, b) => (b - a) / b;
 
 const mean = (data = []) => sum(data) / data.length;
-
+// gets the array with 'gradient'  of  value change in array
 const gradients = (data) =>
   data.reduce((acc, el, idx, arr) => {
     if (idx > 0) {
@@ -243,4 +301,6 @@ module.exports = {
   getUniqueButtonsColors,
   getPaletteDistributionScore,
   getLuminosity,
+  deltaE94,
+  getColorDiffStatus,
 };
