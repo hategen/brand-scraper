@@ -37,6 +37,7 @@ function Scraper() {
   const [url, setUrl] = React.useState('');
   const [palettes, setPalettes] = React.useState(undefined);
   const [suggestions, setSuggestions] = React.useState(undefined);
+  const [suggestedPalette, setSuggestedPalette] = React.useState(undefined);
 
   function handleChange(event) {
     const { value } = event.target;
@@ -47,6 +48,7 @@ function Scraper() {
     const response = await scrapeUrl(pageURL);
     setPalettes(response.data.rawPalettes);
     setSuggestions(response.data.suggestions);
+    setSuggestedPalette(response.data.suggestedPalette);
   };
   return (
     <div className="App">
@@ -79,6 +81,14 @@ function Scraper() {
               />
             );
           })}
+          {suggestedPalette && suggestedPalette[0] && suggestedPalette[1] && suggestedPalette[2] && (
+            <PaletteCard
+              palette={{ colors: suggestedPalette }}
+              fileName="suggested palette"
+              safeFileName="suggested palette"
+              type="suggested palette"
+            />
+          )}
         </Container>
       )}
       {palettes && palettes.length > 0 && (

@@ -1,7 +1,7 @@
 const debug = require('debug')('paletteComposer');
 const color = require('color');
 const { extname } = require('path');
-const { deltaE94, getColorDiffStatus, getLuminosity } = require('./colors');
+const { deltaE94, getColorDiffStatus, getLuminosity, getPaletteMedianLuminocity } = require('./colors');
 const { DELTAE94_DIFF_STATUS, BUTTON_BACKGROUND_MAX_LUMINOSITY, COLOR_DISTANCE_TRESHOLD } = require('../constants.js');
 
 const { get, minBy, maxBy, max } = require('lodash');
@@ -95,24 +95,35 @@ const composePalette = (logoPalette, iconPalette, buttonsPalettes = [], screensh
       potentialBrandColor = minBy(potentialBrandColors, 'logoToIconColorDistance');
     }
 
-    const brandColorIsDark = color(potentialBrandColor.buttonBackgroundColor).isDark();
-    mainColor = potentialBrandColor.buttonBackgroundColor;
-    //dark buttons -> lighter background
-
-    if (brandColorIsDark && color(logoMainColor).isDark() ) {
-      backgroundColor = 1;
+    let brandColorIsDark = true;
+    if (potentialBrandColor) {
+      mainColor = potentialBrandColor.buttonBackgroundColor;
+      brandColorIsDark = color(potentialBrandColor.buttonBackgroundColor).isDark();
+    } else if (buttonColorsArray.length) {
+      mainColor = maxBy(buttonColorsArray, 'weight').buttonBackgroundColor;
+    } else {
+      mainColor = logoMainColor;
     }
 
-    debug('PotentialBrandColors wit best icon similarity', potentialBrandColor);
-  }
+    secondaryColor = maxBy(
+      colorDistanceArray.map((el) => {
+        return { ...el, mainColorToLogoColorDistance: deltaE94(el.logoColor, mainColor) };
+      }),
+      'mainColorToLogoColorDistance'
+    ).logoColor;
 
-  return {
-    logoPalette,
-    iconPalette,
-    mainColor,
-    secondaryColor,
-    backgroundColor,
-  };
+    if (!secondaryColor || mainColor === secondaryColor) {
+      secondaryColor = color(mainColor).desaturate(0.5).darken(3).fade(0.2).hex();
+    }
+
+    const logoMeanLuminace = getPaletteMedianLuminocity([logoMainColor, ...logoColors]);
+    //if (brandColorIsDark && logoMeanLuminace < 0.5) {
+    backgroundColor = color(secondaryColor).desaturate(0.7).lighten(3).fade(0.7).hex();
+    //}
+  }
+  debug('XXXX', mainColor, secondaryColor, backgroundColor);
+
+  return [mainColor, secondaryColor, backgroundColor || '#fafafa'];
 };
 
 module.exports = { composePalette };

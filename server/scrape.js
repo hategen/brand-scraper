@@ -73,14 +73,16 @@ async function scrape(url) {
 
   bestlogo && suggestedLogos.push(bestlogo);
   bestIcon && suggestedLogos.push(bestIcon);
+  let suggestedPalette = [];
   try {
-    const suggestedPalette = composePalette(bestlogo, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
+    suggestedPalette = composePalette(bestlogo, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
   } catch (e) {
     debug(e);
   }
   return {
     rawPalettes: [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes],
     suggestions: suggestedLogos,
+    suggestedPalette,
   };
 }
 

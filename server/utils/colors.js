@@ -97,6 +97,8 @@ const finished = util.promisify(stream.finished);
 
 const getLuminosity = (hexColor) => color(hexColor).luminosity();
 
+const getPaletteMedianLuminocity = (colors = []) => mean(colors.map(getLuminosity));
+
 const getPaletteDistributionScore = (colors = [], criteria, distance = reldist) => {
   const dist = colors.map(criteria).sort();
 
@@ -303,4 +305,5 @@ module.exports = {
   getLuminosity,
   deltaE94,
   getColorDiffStatus,
+  getPaletteMedianLuminocity,
 };
