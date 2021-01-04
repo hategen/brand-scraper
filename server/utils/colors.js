@@ -9,6 +9,7 @@ const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
 const { uniqWith, isEqual, min, max, sum } = require('lodash');
 const { DELTAE94_DIFF_STATUS } = require('../constants.js');
+const gm = require('gm').subClass({ imageMagick: true });
 const Vibrant = require('node-vibrant');
 
 const color = require('color');
@@ -248,12 +249,39 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
   return palette;
 };
 
+const convertICOToPNG = (fileName) => {
+  return new Promise((resolve, reject) => {
+    const convertedFilename = `${fileName.replace('.ico', '.png')}`;
+    gm()
+      .command('magick')
+      .in(path.join(__dirname, '..', 'tmp', fileName))
+      .out('-thumbnail')
+      .out('16x16')
+      .out('-alpha')
+      .out('on')
+      .out('-background')
+      .out('none')
+      .out('-flatten')
+      .write(`${path.join(__dirname, '..', 'tmp', convertedFilename)}`, (err) => {
+        if (err) {
+          debug('ERROR converting ico', err);
+          reject(err);
+        }
+        resolve(convertedFilename);
+      });
+  });
+};
+
 async function getPageImagesPalettes(images = []) {
   const palettes = [];
-  const filteredImages = images.filter((imageObject) => imageObject && !imageObject.url.endsWith('.ico'));
+  const filteredImages = images.filter((imageObject) => imageObject);
   for (const image of filteredImages) {
     if (!image.data) {
-      const { safeFileName, fileName } = await saveImage(image.url);
+      let { safeFileName, fileName } = await saveImage(image.url);
+
+      if (image.url.endsWith('.ico')) {
+        safeFileName = await convertICOToPNG(safeFileName);
+      }
       if (safeFileName) {
         const imagePalette = await getPalette(safeFileName);
         //    imagePalette && (await savePalette(imagePalette, safeFileName));
