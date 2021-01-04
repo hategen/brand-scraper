@@ -4,9 +4,20 @@ const { LOGO_TYPES, ICON_TYPES } = require('../constants');
 const { getPaletteDistributionScore, getLuminosity } = require('./colors');
 
 const findJsonLdImages = (text) => {
-  const info = JSON.parse(text);
-  return info && info.logo && info.logo.url ? info.logo.url : null;
+  try {
+    const info = JSON.parse(text);
+
+    if (info && info.logo && info.logo.url) {
+      return info.logo.url;
+    } else if (info && info.logo) {
+      return info.logo;
+    }
+  } catch (e) {
+    debug('ERROR parsing json logo', e);
+  }
+  return null;
 };
+
 const svgToDataURL = (svgStr) => {
   if (svgStr && svgStr.indexOf('svg') && svgStr.indexOf('href') === -1) {
     const encoded = encodeURIComponent(svgStr).replace(/'/g, '%27').replace(/"/g, '%22');
@@ -168,11 +179,20 @@ const scrapePage = () => {
           `a[href^="${location.origin}/?"] *`,
           `a[href="${location.href}"] *`,
           `a[href="${location.pathname}"] *`,
+          `a[href="/"]`,
+          `a[href="#/"]`,
           `a[href="${location.origin}"]`,
           `a[href="${location.origin}/"]`,
           `a[href^="${location.origin}/?"]`,
           `a[href="${location.href}"]`,
           `a[href="${location.pathname}"]`,
+          `a[href="/"]>*`,
+          `a[href="#/"]>*`,
+          `a[href="${location.origin}"]+*`,
+          `a[href="${location.origin}/"]+*`,
+          `a[href^="${location.origin}/?"]+*`,
+          `a[href="${location.href}"]+*`,
+          `a[href="${location.pathname}"]+*`,
         ]),
       ]
         .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))

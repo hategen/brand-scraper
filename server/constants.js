@@ -43,6 +43,7 @@ module.exports = {
         `[type="submit"]`,
         `[type="button"]`,
         `[class*="Button"]`,
+        `a`,
       ],
       properties: ['color', 'background-color'],
     },
