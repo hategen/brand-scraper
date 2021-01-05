@@ -1,6 +1,6 @@
 module.exports = {
   OVERRIDE_USER_AGENT: false,
-  MAKE_FULL_SCREENSHOT: false,
+  MAKE_FULL_SCREENSHOT: true,
   USER_AGENT:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
   PALETTE_ELEMENT_WIDTH: 100,
@@ -43,11 +43,13 @@ module.exports = {
         `[type="submit"]`,
         `[type="button"]`,
         `[class*="Button"]`,
-        `a`,
       ],
       properties: ['color', 'background-color'],
     },
-    logo: [],
+    links: {
+      selectors: [`a`],
+      properties: ['color', 'background-color'],
+    },
   },
   DEFAULT_VIEWPORT: { width: 1920, height: 1080 },
   DEFAULT_PAGE_WAIT_TIMEOUT: 1000,

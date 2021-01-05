@@ -62,8 +62,17 @@ async function scrape(url) {
     SELECTORS.buttons.properties
   );
 
+  const linksColors = await injectCodeIntoPage(
+    page,
+    getPropsBySelector,
+    SELECTORS.links.selectors,
+    SELECTORS.links.properties
+  );
+
   const uniquebuttonColors = getUniqueButtonsColors(buttonColors);
+  const uniqueLinksColors = getUniqueButtonsColors(linksColors);
   const buttonsPalettes = getPalettesFromTags(uniquebuttonColors, 'buttons');
+  const linkPalettes = getPalettesFromTags(uniqueLinksColors, 'links');
   await closeBrowser(browser);
 
   const bestlogo = getBestLogo(logoPalettes);
@@ -75,8 +84,12 @@ async function scrape(url) {
   bestIcon && suggestedLogos.push(bestIcon);
   let suggestedPalette = [];
   try {
-
-    suggestedPalette = composePalette(bestlogo || bestIcon, bestIcon, buttonsPalettes, get(screenshotPalettes, [0]));
+    suggestedPalette = composePalette(
+      bestlogo || bestIcon,
+      bestIcon,
+      [...buttonsPalettes, ...linkPalettes],
+      get(screenshotPalettes, [0])
+    );
   } catch (e) {
     debug(e);
   }

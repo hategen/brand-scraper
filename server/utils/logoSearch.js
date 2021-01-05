@@ -185,6 +185,7 @@ const scrapePage = () => {
         ...document.querySelectorAll([
           `[aria-label*="home"] *`,
           `a[href="/"] *`,
+          `a[href="/home"] *`,
           `[rel="home"] *`,
           `a[href="#/"] *`,
           `a[href="${location.origin}"] *`,
@@ -200,6 +201,7 @@ const scrapePage = () => {
           `a[href="${location.href}"]`,
           `a[href="${location.pathname}"]`,
           `a[href="/"]>*`,
+          `a[href="/home"]>*`,
           `a[href="#/"]>*`,
           `a[href="${location.origin}"]+*`,
           `a[href="${location.origin}/"]+*`,
@@ -223,6 +225,7 @@ const scrapePage = () => {
           `a[href="#/"] img`,
           `a[href^="/?"] img`,
           `[rel="home"] img`,
+          `a[href="/home"] img`,
           `a[href="${location.origin}"] img`,
           `a[href="${location.origin}/"] img`,
           `a[href^="${location.origin}/?"] img`,
@@ -239,6 +242,7 @@ const scrapePage = () => {
         ...document.querySelectorAll([
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
+          `a[href="/home"] svg`,
           `a[href="#/"] svg`,
           `a[href^="/?"] svg`,
           `[rel="home"] svg`,

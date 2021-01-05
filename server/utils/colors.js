@@ -12,6 +12,8 @@ const { DELTAE94_DIFF_STATUS } = require('../constants.js');
 const gm = require('gm').subClass({ imageMagick: true });
 const Vibrant = require('node-vibrant');
 
+const svg2img = require('svg2img');
+
 const color = require('color');
 
 const deltaE94 = (hex1, hex2) => {
@@ -179,7 +181,7 @@ const getPalettesFromTags = (tagProps = [], tag) => {
 
     Object.keys(tagColors).forEach((tagColorProperty) => {
       palette.palette.colors.push(rgbToHex(tagColors[tagColorProperty]));
-      palette.palette.tag = `${palette.palette.tag}_${tagColorProperty}`;
+      palette.tag = `${palette.tag}_${tagColorProperty}`;
     });
 
     palettes.push(palette);
@@ -211,40 +213,72 @@ const savePalette = async (palette, fileName) => {
   debug(`The PNG palette file for ${fileName} created.`);
 };
 
-const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
+const getColorThiefPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
   const palette = {
     mainColor: '#FFFFFF',
     colors: [],
   };
 
-  if (fileName && !fileName.includes('svg')) {
-    try {
-      const mainColor = await ColorThief.getColor(path.join(__dirname, '..', TMP_FOLDER, fileName), PALETTE_PIXEL_SKIP);
-      const mainColorHEX = `#${convert.rgb.hex(...mainColor)}`;
-      palette.mainColor = mainColorHEX;
-    } catch (err) {
-      debug(`Error during getting main  color  from ${fileName}`, err.message || err.stack);
-      palette.colors = ['#FFFFFF'];
-      return palette;
-    }
+  try {
+    const mainColor = await ColorThief.getColor(path.join(__dirname, '..', TMP_FOLDER, fileName), PALETTE_PIXEL_SKIP);
+    const mainColorHEX = `#${convert.rgb.hex(...mainColor)}`;
+    palette.mainColor = mainColorHEX;
+  } catch (err) {
+    debug(`Error during getting main  color from ${fileName}`, err.message || err.stack);
+    palette.colors = ['#FFFFFF'];
+    return palette;
+  }
 
-    try {
-      const paletteColors = await ColorThief.getPalette(
-        path.join(__dirname, '..', TMP_FOLDER, fileName),
-        paletteMaxColors,
-        PALETTE_PIXEL_SKIP
-      );
-      const paletteColorsHex = [...new Set(paletteColors.map((el) => `#${convert.rgb.hex(...el)}`))];
-      palette.colors = paletteColorsHex;
-    } catch (err) {
-      debug(`Error during getting main  color from ${fileName}`, err.message || err.stack);
-      return palette; //returning default  palette
-    }
-  } else {
+  try {
+    const paletteColors = await ColorThief.getPalette(
+      path.join(__dirname, '..', TMP_FOLDER, fileName),
+      paletteMaxColors,
+      PALETTE_PIXEL_SKIP
+    );
+    const paletteColorsHex = [...new Set(paletteColors.map((el) => `#${convert.rgb.hex(...el)}`))];
+    palette.colors = paletteColorsHex;
+  } catch (err) {
+    debug(`Error during getting main  color from ${fileName}`, err.message || err.stack);
+    return palette; //returning default  palette
+  }
+  return palette;
+};
+
+const convertSVGtoPNG = async (fileName) => {
+  return new Promise((resolve, reject) => {
+    svg2img(path.join(__dirname, '..', TMP_FOLDER, fileName), (error, buffer) => {
+      if (error) {
+        debug('error during converting svg=>png', error);
+        return reject(error);
+      }
+      const newFileName = fileName.replace('.svg', '.png');
+
+      fs.writeFileSync(path.join(__dirname, '..', TMP_FOLDER, newFileName), buffer);
+      return resolve(newFileName);
+    });
+  });
+};
+
+const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
+  let palette = {
+    mainColor: '#FFFFFF',
+    colors: [],
+  };
+
+  if (fileName && fileName.includes('svg')) {
     const paletteColors = getColors(path.join(__dirname, '..', TMP_FOLDER, fileName));
     const paletteColorsHex = [...new Set(paletteColors.fills.map((color) => color.hex()))];
-    palette.mainColor = paletteColorsHex[0];
-    palette.colors = paletteColorsHex;
+    //no colors extracted ==> rasterize and get  as usual
+    if (!paletteColorsHex.length || (paletteColorsHex.length === 1 && paletteColorsHex[0] === '#000000')) {
+      const newFileName = await convertSVGtoPNG(fileName);
+      palette = await getColorThiefPalette(newFileName, paletteMaxColors);
+      palette;
+    } else {
+      palette.mainColor = paletteColorsHex[0];
+      palette.colors = paletteColorsHex;
+    }
+  } else {
+    palette = await getColorThiefPalette(fileName, paletteMaxColors);
   }
 
   return palette;

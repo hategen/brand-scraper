@@ -13,6 +13,15 @@ const paletteComplete = (palette = {}) => paleteHasMainColor(palette) && paleteH
 const isSVGPalette = (palette) =>
   palette && (extname(palette.fileName) === '.svg' || extname(palette.safeFileName) === '.svg');
 
+//gets potential brand color
+//  approach for getting barand color  or the color close to it is quite  simple
+// getting the logo palette + icon palette and looking for the colors with less delta E distance
+// assuming  that is  something those 2 share in common
+// this color  can  be quite easy  to  get  from  adequate svg but in raster could be slightly  off
+const getBrandColor = () => {};
+
+
+
 const composePalette = (logoPalette, iconPalette, buttonsPalettes = [], screenshotPalette) => {
   let brandColor;
   let mainColor;
