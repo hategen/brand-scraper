@@ -224,6 +224,7 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
       palette.mainColor = mainColorHEX;
     } catch (err) {
       debug(`Error during getting main  color  from ${fileName}`, err.message || err.stack);
+      palette.colors = ['#FFFFFF'];
       return palette;
     }
 
@@ -279,7 +280,7 @@ async function getPageImagesPalettes(images = []) {
     if (!image.data) {
       let { safeFileName, fileName } = await saveImage(image.url);
 
-      if (image.url.endsWith('.ico')) {
+      if ((fileName && fileName.endsWith('.ico')) || (safeFileName && safeFileName.endsWith('.ico'))) {
         safeFileName = await convertICOToPNG(safeFileName);
       }
       if (safeFileName) {

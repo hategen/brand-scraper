@@ -6,7 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -97,7 +99,8 @@
       <workItem from="1609228247222" duration="68799000" />
       <workItem from="1609746300314" duration="7935000" />
       <workItem from="1609765433533" duration="286000" />
-      <workItem from="1609765728312" duration="9568000" />
+      <workItem from="1609765728312" duration="11066000" />
+      <workItem from="1609833590326" duration="6389000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -211,7 +214,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609771842012</updated>
     </task>
-    <option name="localTasksCounter" value="17" />
+    <task id="LOCAL-00017" summary="- couple of weird cases covered  for better logo matching">
+      <created>1609777092128</created>
+      <option name="number" value="00017" />
+      <option name="presentableId" value="LOCAL-00017" />
+      <option name="project" value="LOCAL" />
+      <updated>1609777092128</updated>
+    </task>
+    <option name="localTasksCounter" value="18" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -234,7 +244,8 @@
     <MESSAGE value="- draft of happy  scenario  for color selection" />
     <MESSAGE value="- draft of happy  scenario  for color selection with some ui" />
     <MESSAGE value="- added gm  to convert ico  to  be able to  extract palettes  from  ico icons." />
-    <option name="LAST_COMMIT_MESSAGE" value="- added gm  to convert ico  to  be able to  extract palettes  from  ico icons." />
+    <MESSAGE value="- couple of weird cases covered  for better logo matching" />
+    <option name="LAST_COMMIT_MESSAGE" value="- couple of weird cases covered  for better logo matching" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -260,31 +271,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
-          <line>102</line>
+          <line>114</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/node_modules/gm/lib/command.js</url>
           <line>189</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="105" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/scrape.js</url>
-          <line>52</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="109" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
           <line>8</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="115" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
           <line>6</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="116" />
         </line-breakpoint>
       </breakpoints>

@@ -64,6 +64,9 @@ const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFu
 };
 
 const cleanPage = () => {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
   document.querySelectorAll('img').forEach((el) => {
     el.parentNode.removeChild(el);
   });
@@ -76,6 +79,15 @@ const cleanPage = () => {
     const style = window.getComputedStyle(allElements[i]);
     if (style.background.includes('url') || style.backgroundImage) {
       allElements[i].style.backgroundImage = 'none';
+    }
+    const elementWidth = Math.round(style.getPropertyValue('width').replace('px', ''));
+    const elementHeight = Math.round(style.getPropertyValue('height').replace('px', ''));
+    if (
+      style.getPropertyValue('position') === 'fixed' &&
+      elementWidth === viewportWidth &&
+      elementHeight === viewportHeight
+    ) {
+      allElements[i].parentNode.removeChild(allElements[i]);
     }
   }
 };

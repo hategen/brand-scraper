@@ -37,7 +37,7 @@ const getBestLogo = (logoPalettes = []) => {
   const minRatingLogos = logos.filter((logo) => logo.priority === minPriority);
 
   //const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
-  //just get first one now
+  //just get first one for now
   return minRatingLogos[0];
 };
 
@@ -78,6 +78,19 @@ const scrapePage = () => {
         el.innerHTML = svgShadowContainerNodeContent + el.innerHTML;
       }
     }
+    // inline svg styles
+    el.querySelectorAll('*').forEach((el) => {
+      const style = window.getComputedStyle(el);
+      const fill = style.getPropertyValue('fill');
+      const stroke = style.getPropertyValue('stroke');
+      if (fill !== 'none') {
+        el.setAttribute('fill', fill);
+      }
+      if (fill !== 'none') {
+        el.setAttribute('stroke', stroke);
+      }
+    });
+
     return el.outerHTML;
   };
 
