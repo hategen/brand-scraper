@@ -49,7 +49,7 @@
     <property name="javascript.nodejs.core.library.configured.version" value="12.16.3" />
     <property name="javascript.nodejs.core.library.typings.version" value="12.19.9" />
     <property name="js.linters.configure.manually.selectedeslint" value="true" />
-    <property name="last_opened_file_path" value="$USER_HOME$/Porjects/stonly" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -59,7 +59,7 @@
     <property name="nodejs_package_manager_path" value="yarn" />
     <property name="prettierjs.PrettierConfiguration.Package" value="C:\Users\hateg\dev\brand-scraper\node_modules\prettier" />
     <property name="settings.editor.selected.configurable" value="preferences.sourceCode.JavaScript" />
-    <property name="ts.external.directory.path" value="C:\Users\hateg\AppData\Local\JetBrains\Toolbox\apps\WebStorm\ch-0\203.6682.105\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
+    <property name="ts.external.directory.path" value="C:\Users\hateg\AppData\Local\JetBrains\Toolbox\apps\WebStorm\ch-0\203.6682.155\plugins\JavaScriptLanguage\jsLanguageServicesImpl\external" />
     <property name="vue.rearranger.settings.migration" value="true" />
   </component>
   <component name="RecentsManager">
@@ -103,7 +103,9 @@
       <workItem from="1609746300314" duration="7935000" />
       <workItem from="1609765433533" duration="286000" />
       <workItem from="1609765728312" duration="11066000" />
-      <workItem from="1609833590326" duration="12855000" />
+      <workItem from="1609833590326" duration="17658000" />
+      <workItem from="1609866485347" duration="1605000" />
+      <workItem from="1609869043447" duration="1331000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -231,7 +233,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609850554485</updated>
     </task>
-    <option name="localTasksCounter" value="19" />
+    <task id="LOCAL-00019" summary="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap">
+      <created>1609857402450</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1609857402450</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -256,7 +265,8 @@
     <MESSAGE value="- added gm  to convert ico  to  be able to  extract palettes  from  ico icons." />
     <MESSAGE value="- couple of weird cases covered  for better logo matching" />
     <MESSAGE value="- improved screenshot palette by removing fixed 100% screen overlays &#10;- white logos with only one color now have  white  - one-color palette &#10;- logo to  icon fallback if  life gets rough" />
-    <option name="LAST_COMMIT_MESSAGE" value="- improved screenshot palette by removing fixed 100% screen overlays &#10;- white logos with only one color now have  white  - one-color palette &#10;- logo to  icon fallback if  life gets rough" />
+    <MESSAGE value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
+    <option name="LAST_COMMIT_MESSAGE" value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -292,21 +302,13 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>336</line>
-          <properties lambdaOrdinal="-1" />
+          <line>348</line>
           <option name="timeStamp" value="121" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>244</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="122" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>221</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="132" />
+          <line>283</line>
+          <option name="timeStamp" value="133" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

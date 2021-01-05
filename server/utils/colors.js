@@ -4,14 +4,14 @@ const axios = require('axios');
 const path = require('path');
 const { v4: uuid } = require('uuid');
 const fs = require('fs');
+const fsPromise = require('fs').promises;
 const ColorThief = require('colorthief');
 const { createCanvas } = require('canvas');
 const getColors = require('get-svg-colors');
 const { uniqWith, isEqual, min, max, sum } = require('lodash');
 const { DELTAE94_DIFF_STATUS } = require('../constants.js');
 const gm = require('gm').subClass({ imageMagick: true });
-const Vibrant = require('node-vibrant');
-
+const svg2png = require('svg2png');
 const svg2img = require('svg2img');
 
 const color = require('color');
@@ -245,8 +245,21 @@ const getColorThiefPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COL
 };
 
 const convertSVGtoPNG = async (fileName) => {
-  return new Promise((resolve, reject) => {
-    svg2img(path.join(__dirname, '..', TMP_FOLDER, fileName), (error, buffer) => {
+
+  return fsPromise
+    .readFile(path.join(__dirname, '..', TMP_FOLDER, fileName))
+    .then((buff) => svg2png(buff, { width: 1000, height: 500 }))
+    .then((buffer) => {
+      const newFileName = fileName.replace('.svg', '.png');
+      fs.writeFileSync(path.join(__dirname, '..', TMP_FOLDER, newFileName), buffer);
+      return newFileName;
+    })
+    .catch((err) => {
+      debug('error during converting svg=>png', err);
+      throw err;
+    });
+
+  /*   svg2img(path.join(__dirname, '..', TMP_FOLDER, fileName), (error, buffer) => {
       if (error) {
         debug('error during converting svg=>png', error);
         return reject(error);
@@ -255,8 +268,7 @@ const convertSVGtoPNG = async (fileName) => {
 
       fs.writeFileSync(path.join(__dirname, '..', TMP_FOLDER, newFileName), buffer);
       return resolve(newFileName);
-    });
-  });
+    });*/
 };
 
 const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
@@ -269,7 +281,7 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
     const paletteColors = getColors(path.join(__dirname, '..', TMP_FOLDER, fileName));
     const paletteColorsHex = [...new Set(paletteColors.fills.map((color) => color.hex()))];
     //no colors extracted ==> rasterize and get  as usual
-    if (!paletteColorsHex.length || (paletteColorsHex.length === 1 && paletteColorsHex[0] === '#000000')) {
+    if (!paletteColorsHex.length || paletteColorsHex.length === 1) {
       const newFileName = await convertSVGtoPNG(fileName);
       palette = await getColorThiefPalette(newFileName, paletteMaxColors);
       palette;

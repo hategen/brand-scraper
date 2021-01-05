@@ -1,7 +1,7 @@
 const debug = require('debug')('scrape');
 const rimraf = require('rimraf');
 const path = require('path');
-
+const { v4: uuid } = require('uuid');
 const { get } = require('lodash');
 const { scrapePage, processScrapedLogos, getBestLogo, getBestIcon, adjustWeights } = require('./utils/logoSearch');
 const { composePalette } = require('./utils/paletteComposer');
@@ -18,7 +18,7 @@ const { PALETTES_FOLDER, TMP_FOLDER, SELECTORS, MAKE_FULL_SCREENSHOT } = require
 
 async function getScreenshotPalette(page) {
   const palettes = [];
-  const fileName = `screenshot.png`;
+  const fileName = `screenshot_${uuid()}.png`;
   await page.screenshot({
     type: 'png',
     path: path.join(__dirname, TMP_FOLDER, fileName),
@@ -52,8 +52,10 @@ async function scrape(url) {
   const logos = processScrapedLogos(await injectCodeIntoPage(page, scrapePage), url);
   const logoPalettes = adjustWeights(await getPageImagesPalettes(logos));
   // removing unneeeded elements from page
-  await injectCodeIntoPage(page, cleanPage);
+
   const screenshotPalettes = await getScreenshotPalette(page);
+  await injectCodeIntoPage(page, cleanPage);
+  const cleanScreenshotPalettes = await getScreenshotPalette(page);
 
   const buttonColors = await injectCodeIntoPage(
     page,
@@ -94,7 +96,7 @@ async function scrape(url) {
     debug(e);
   }
   return {
-    rawPalettes: [...logoPalettes, ...screenshotPalettes, ...buttonsPalettes],
+    rawPalettes: [...logoPalettes, ...screenshotPalettes, ...cleanScreenshotPalettes, ...buttonsPalettes],
     suggestions: suggestedLogos,
     suggestedPalette,
   };

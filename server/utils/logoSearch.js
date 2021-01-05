@@ -183,6 +183,7 @@ const scrapePage = () => {
     () =>
       [
         ...document.querySelectorAll([
+          `#logo *`,
           `[aria-label*="home"] *`,
           `a[href="/"] *`,
           `a[href="/home"] *`,
@@ -220,6 +221,7 @@ const scrapePage = () => {
     () =>
       [
         ...document.querySelectorAll([
+          `#logo img`,
           `[aria-label*="home"] img`,
           `a[href="/"] img`,
           `a[href="#/"] img`,
@@ -240,6 +242,7 @@ const scrapePage = () => {
     () => {
       return [
         ...document.querySelectorAll([
+          `#logo svg`,
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
           `a[href="/home"] svg`,
