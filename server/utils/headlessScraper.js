@@ -63,31 +63,57 @@ const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFu
   }
 };
 
-const cleanPage = () => {
+const removeOverlays = () => {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
-
-  document.querySelectorAll('img').forEach((el) => {
-    el.parentNode.removeChild(el);
-  });
-  document.querySelectorAll('video').forEach((el) => {
-    el.parentNode.removeChild(el);
-  });
   const allElements = document.getElementsByTagName('*');
 
   for (let i = 0, { length } = allElements; i < length; i++) {
-    const style = window.getComputedStyle(allElements[i]);
-    if (style.background.includes('url') || style.backgroundImage) {
-      allElements[i].style.backgroundImage = 'none';
+    try {
+      const style = window.getComputedStyle(allElements[i]);
+      const elementWidth = Math.round(style.getPropertyValue('width').replace('px', ''));
+      const elementHeight = Math.round(style.getPropertyValue('height').replace('px', ''));
+      if (
+        style.getPropertyValue('position') === 'fixed' &&
+        elementWidth === viewportWidth &&
+        elementHeight === viewportHeight
+      ) {
+        allElements[i].parentNode.removeChild(allElements[i]);
+      }
+    } catch (err) {
+      console.error('removeOverlays', err);
     }
-    const elementWidth = Math.round(style.getPropertyValue('width').replace('px', ''));
-    const elementHeight = Math.round(style.getPropertyValue('height').replace('px', ''));
-    if (
-      style.getPropertyValue('position') === 'fixed' &&
-      elementWidth === viewportWidth &&
-      elementHeight === viewportHeight
-    ) {
-      allElements[i].parentNode.removeChild(allElements[i]);
+  }
+};
+
+const removeImages = () => {
+  const viewportWidth = window.innerWidth;
+  const viewportHeight = window.innerHeight;
+
+  document.querySelectorAll('img,svg,video').forEach((el) => {
+    // el.parentNode.removeChild(el);
+    el.style.visibility = 'hidden';
+  });
+
+  const allElements = document.getElementsByTagName('*');
+
+  for (let i = 0, { length } = allElements; i < length; i++) {
+    try {
+      const style = window.getComputedStyle(allElements[i]);
+      if (style.background.includes('url') || style.backgroundImage) {
+        allElements[i].style.backgroundImage = 'none';
+      }
+      const elementWidth = Math.round(style.getPropertyValue('width').replace('px', ''));
+      const elementHeight = Math.round(style.getPropertyValue('height').replace('px', ''));
+      if (
+        style.getPropertyValue('position') === 'fixed' &&
+        elementWidth === viewportWidth &&
+        elementHeight === viewportHeight
+      ) {
+        allElements[i].parentNode.removeChild(allElements[i]);
+      }
+    } catch (e) {
+      console.error('removeImages', e);
     }
   }
 };
@@ -98,7 +124,7 @@ const getPropsBySelector = (selectors, properties) => {
   selectors.forEach((selector) => {
     const elements = [...document.querySelectorAll(selector)];
     elements.forEach((el) => {
-      el.focus();
+      //   el.focus();
       const computedStyle = window.getComputedStyle(el);
       const elementColors = {};
       properties.forEach((property) => {
@@ -119,6 +145,7 @@ module.exports = {
   init,
   injectCodeIntoPage,
   closeBrowser,
-  cleanPage,
+  removeImages,
+  removeOverlays,
   getPropsBySelector,
 };

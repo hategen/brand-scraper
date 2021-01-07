@@ -6,11 +6,9 @@
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/paletteComposer.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/paletteComposer.js" afterDir="false" />
     </list>
@@ -105,7 +103,8 @@
       <workItem from="1609765728312" duration="11066000" />
       <workItem from="1609833590326" duration="17658000" />
       <workItem from="1609866485347" duration="1605000" />
-      <workItem from="1609869043447" duration="1331000" />
+      <workItem from="1609869043447" duration="1959000" />
+      <workItem from="1610005926815" duration="17296000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -240,7 +239,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609857402450</updated>
     </task>
-    <option name="localTasksCounter" value="20" />
+    <task id="LOCAL-00020" summary="- slightly  better  svg-&gt;png converter">
+      <created>1609870401519</created>
+      <option name="number" value="00020" />
+      <option name="presentableId" value="LOCAL-00020" />
+      <option name="project" value="LOCAL" />
+      <updated>1609870401520</updated>
+    </task>
+    <option name="localTasksCounter" value="21" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -266,7 +272,8 @@
     <MESSAGE value="- couple of weird cases covered  for better logo matching" />
     <MESSAGE value="- improved screenshot palette by removing fixed 100% screen overlays &#10;- white logos with only one color now have  white  - one-color palette &#10;- logo to  icon fallback if  life gets rough" />
     <MESSAGE value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
-    <option name="LAST_COMMIT_MESSAGE" value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
+    <MESSAGE value="- slightly  better  svg-&gt;png converter" />
+    <option name="LAST_COMMIT_MESSAGE" value="- slightly  better  svg-&gt;png converter" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -292,7 +299,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
-          <line>114</line>
+          <line>140</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -301,14 +308,39 @@
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>348</line>
-          <option name="timeStamp" value="121" />
+          <url>file://$PROJECT_DIR$/server/scrape.js</url>
+          <line>89</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="136" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/colors.js</url>
-          <line>283</line>
-          <option name="timeStamp" value="133" />
+          <url>file://$PROJECT_DIR$/server/scrape.js</url>
+          <line>90</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="137" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/scrape.js</url>
+          <line>88</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="139" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>32</line>
+          <option name="timeStamp" value="140" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>370</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="141" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>386</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="142" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

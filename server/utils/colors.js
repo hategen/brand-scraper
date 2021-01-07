@@ -245,7 +245,6 @@ const getColorThiefPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COL
 };
 
 const convertSVGtoPNG = async (fileName) => {
-
   return fsPromise
     .readFile(path.join(__dirname, '..', TMP_FOLDER, fileName))
     .then((buff) => svg2png(buff, { width: 1000, height: 500 }))
@@ -258,17 +257,6 @@ const convertSVGtoPNG = async (fileName) => {
       debug('error during converting svg=>png', err);
       throw err;
     });
-
-  /*   svg2img(path.join(__dirname, '..', TMP_FOLDER, fileName), (error, buffer) => {
-      if (error) {
-        debug('error during converting svg=>png', error);
-        return reject(error);
-      }
-      const newFileName = fileName.replace('.svg', '.png');
-
-      fs.writeFileSync(path.join(__dirname, '..', TMP_FOLDER, newFileName), buffer);
-      return resolve(newFileName);
-    });*/
 };
 
 const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
@@ -339,6 +327,7 @@ async function getPageImagesPalettes(images = []) {
           type: image.type,
           priority: image.priority,
           size: image.size || undefined,
+          boundingRect: image.boundingRect,
         });
       }
     } else {
@@ -352,6 +341,7 @@ async function getPageImagesPalettes(images = []) {
           palette: imagePalette,
           type: image.type,
           priority: image.priority,
+          boundingRect: image.boundingRect,
         });
       }
     }

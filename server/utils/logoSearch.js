@@ -1,6 +1,7 @@
 const debug = require('debug')('logoSearch');
 const { orderBy, uniqBy, minBy, get } = require('lodash');
-const { LOGO_TYPES, ICON_TYPES } = require('../constants');
+const { LOGO_TYPES, ICON_TYPES, DEFAULT_VIEWPORT } = require('../constants');
+
 const { getPaletteDistributionScore, getLuminosity } = require('./colors');
 
 const findJsonLdImages = (text) => {
@@ -29,28 +30,30 @@ const svgToDataURL = (svgStr) => {
 };
 
 const getBestLogo = (logoPalettes = []) => {
-  const logos = logoPalettes.filter((palette) => {
-    return LOGO_TYPES.includes(palette.type);
-  });
+  const logos = logoPalettes.filter((palette) => LOGO_TYPES.includes(palette.type));
   const minPriority = get(minBy(logos, 'priority'), 'priority');
 
   const minRatingLogos = logos.filter((logo) => logo.priority === minPriority);
+  // trying to get logo with max rating  that is visible on the initial screen
+  const bestLogos = minRatingLogos.filter((el) => el.boundingRect && el.boundingRect.isVisible);
 
-  //const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
-  //just get first one for now
+  if (bestLogos.length) {
+    return bestLogos[0];
+  }
+
   return minRatingLogos[0];
 };
 
 const getBestIcon = (logoPalettes = []) => {
-  const logos = logoPalettes.filter((palette) => {
-    return ICON_TYPES.includes(palette.type);
-  });
+  const logos = logoPalettes.filter((palette) => ICON_TYPES.includes(palette.type));
   const minPriority = get(minBy(logos, 'priority'), 'priority');
 
   const minRatingLogos = logos.filter((logo) => logo.priority === minPriority);
 
-  //const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
-  //just get first one now
+  /*
+   * const d = minRatingLogos.map((e) => e.palette.colors).map((el) => getPaletteDistributionScore(el, getLuminosity));
+   * just get first one now
+   */
   return minRatingLogos[0];
 };
 
@@ -65,6 +68,25 @@ const isValidUrl = (url) => {
   }
 };
 const scrapePage = () => {
+  function isElementInViewport(rect) {
+    return (
+      rect.top >= 0 &&
+      rect.left >= 0 &&
+      rect.bottom <= (window.innerHeight || document.documentElement.clientHeight) &&
+      rect.right <= (window.innerWidth || document.documentElement.clientWidth)
+    );
+  }
+  // getting bounding rect for the image.
+  const getBoundingClientRect = (el) => {
+    if (el.getBoundingClientRect) {
+      const boundingRect = JSON.parse(JSON.stringify(el.getBoundingClientRect()));
+
+      if (Object.values(boundingRect).filter((el) => el !== 0).length > 0) {
+        return { ...boundingRect, isVisible: isElementInViewport(boundingRect) };
+      }
+    }
+    return null;
+  };
   // do  not  do that at home  need a better way of getting  imported svg
   const checkSVGuse = (el) => {
     const useTag = el.querySelector('use');
@@ -108,18 +130,21 @@ const scrapePage = () => {
     () =>
       [...document.querySelectorAll(`meta[property="og:logo"]`)].map((el) => ({
         type: 'og:logo',
+        boundingRect: getBoundingClientRect(el),
         priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[itemprop="logo"]`)].map((el) => ({
         type: 'meta-itemprop/logo',
+        boundingRect: getBoundingClientRect(el),
         priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`link[rel*="icon"]`)].map((el) => ({
         type: 'link-rel/icon',
+        boundingRect: getBoundingClientRect(el),
         priority: 4,
         url: el.getAttribute('href'),
         size: el.getAttribute('sizes'),
@@ -127,48 +152,56 @@ const scrapePage = () => {
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[itemprop="logo"]`)].map((el) => ({
         type: 'img-itemprop/logo',
+        boundingRect: getBoundingClientRect(el),
         priority: 4,
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`meta[name*="msapplication-TileImage"]`)].map((el) => ({
         type: 'meta-name/msapplication-TileImage',
+        boundingRect: getBoundingClientRect(el),
         priority: 4,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[content*="logo"]`)].map((el) => ({
         type: 'meta-content/logo',
+        boundingRect: getBoundingClientRect(el),
         priority: 3,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => ({
         type: 'meta-content/image',
+        boundingRect: getBoundingClientRect(el),
         priority: 4,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`script[type*="application/ld+json"]`)].map((el) => ({
         type: 'json-ld-logo',
+        boundingRect: getBoundingClientRect(el),
         url: el.innerHTML, // findJsonLdImages
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[alt*="logo"]`)].map((el) => ({
         priority: 3,
         type: 'img-alt/logo',
+        boundingRect: getBoundingClientRect(el),
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[class*="logo"]`)].map((el) => ({
         priority: 3,
         type: 'img-alt/logo-class',
+        boundingRect: getBoundingClientRect(el),
         url: el.getAttribute('src'),
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[src*="logo"]`)].map((el) => ({
         priority: 3,
         type: 'img-src/logo-class',
+        boundingRect: getBoundingClientRect(el),
         url: el.getAttribute('src'),
       })),
     () =>
@@ -178,6 +211,7 @@ const scrapePage = () => {
         .map((el) => ({
           priority: 4,
           type: 'css:background-image',
+          boundingRect: getBoundingClientRect(el),
           url: el, // extractURL
         })),
     () =>
@@ -216,6 +250,7 @@ const scrapePage = () => {
         .map((el) => ({
           priority: 2,
           type: 'css:background-image/home-leading',
+          boundingRect: getBoundingClientRect(el),
           url: el, // extractURL
         })),
     () =>
@@ -236,11 +271,12 @@ const scrapePage = () => {
         ]),
       ].map((el) => ({
         priority: 1,
+        boundingRect: getBoundingClientRect(el),
         type: 'img-nested/home-leading',
         url: el.getAttribute('src'),
       })),
-    () => {
-      return [
+    () =>
+      [
         ...document.querySelectorAll([
           `#logo svg`,
           `[aria-label*="home"] svg`,
@@ -260,11 +296,11 @@ const scrapePage = () => {
         return {
           priority: 2,
           type: 'img-nested/home-leading-svg',
+          boundingRect: getBoundingClientRect(el),
           data: true,
           url: checkSVGuse(el), // svgToDataURL
         };
-      });
-    },
+      }),
   ];
   return scrapers.reduce((acc, scraperFunc) => {
     acc.push(...scraperFunc());
@@ -282,26 +318,30 @@ const logoProcessors = {
 const adjustWeights = (logoPalettes) => {
   logoPalettes.forEach((logo) => {
     if (logo.type !== 'img-nested/home-leading-svg' && logo.fileName.endsWith('.svg')) {
-      logo.priority = logo.priority - 1;
+      logo.priority -= 1;
     }
     if (LOGO_TYPES.includes(logo.type) && !logo.palette) {
-      logo.priority = logo.priority + 1;
+      logo.priority += 1;
     }
 
     if (LOGO_TYPES.includes(logo.type) && logo.palette && (!logo.palette.colors || logo.palette.colors.length === 0)) {
-      logo.priority = logo.priority + 1;
+      logo.priority += 1;
     }
 
     if (logo.palette && logo.palette.colors.length === 1 && ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])) {
-      logo.priority = logo.priority + 1;
+      logo.priority += 1;
     }
     if (logo.palette && logo.palette.mainColor && ['#000000', '#ffffff'].includes(logo.palette.mainColor)) {
-      logo.priority = logo.priority + 1;
+      logo.priority += 1;
+    }
+
+    if (logo.boundingRect && logo.boundingRect.isVisible) {
+      logo.priority -= 1;
     }
 
     if (ICON_TYPES.includes(logo.type) && logo.size && !logo.fileName.includes('apple-touch-icon')) {
       const size = Number.parseInt(logo.size.split('x'), 10) || 0;
-      logo.priority = logo.priority - Math.round(size / 16);
+      logo.priority -= Math.round(size / 16);
     }
   });
 
