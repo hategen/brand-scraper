@@ -4,7 +4,9 @@ module.exports = {
   USER_AGENT:
     'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36',
   PALETTE_ELEMENT_WIDTH: 100,
-  PALETTE_MAX_COLORS: 3,
+  LOGO_PALETTE_MAX_COLORS: 2,
+  LOGO_BACKGROUND_PALETTE_MAX_COLORS: 2,
+  FULL_SCREENSHOT_PALETTE_MAX_COLORS: 2,
   PALETTE_PIXEL_SKIP: 5,
   PALETTES_FOLDER: 'palettes',
   TMP_FOLDER: 'tmp',
@@ -26,6 +28,7 @@ module.exports = {
     'img-alt/logo-class',
     'img-alt/logo',
     'meta-content/image',
+    'meta-content/logo',
     'json-ld-logo',
     'img-itemprop/logo',
     'og:logo',

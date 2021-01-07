@@ -90,10 +90,15 @@ const removeImages = () => {
   const viewportWidth = window.innerWidth;
   const viewportHeight = window.innerHeight;
 
-  document.querySelectorAll('img,svg,video').forEach((el) => {
+  document.head.insertAdjacentHTML(
+    'beforeend',
+    `<style>img{visibility:hidden!important} svg{visibility:hidden!important} video{visibility:hidden!important};</style>`
+  );
+
+  /*  document.querySelectorAll('img,svg,video').forEach((el) => {
     // el.parentNode.removeChild(el);
     el.style.visibility = 'hidden';
-  });
+  });*/
 
   const allElements = document.getElementsByTagName('*');
 

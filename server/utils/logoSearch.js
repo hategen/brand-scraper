@@ -30,6 +30,7 @@ const svgToDataURL = (svgStr) => {
 };
 
 const getBestLogo = (logoPalettes = []) => {
+  const z = 1;
   const logos = logoPalettes.filter((palette) => LOGO_TYPES.includes(palette.type));
   const minPriority = get(minBy(logos, 'priority'), 'priority');
 
@@ -206,14 +207,14 @@ const scrapePage = () => {
       })),
     () =>
       [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`])]
-        .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
-        .filter((el) => el !== 'none')
         .map((el) => ({
           priority: 4,
           type: 'css:background-image',
           boundingRect: getBoundingClientRect(el),
-          url: el, // extractURL
-        })),
+          url: window.getComputedStyle(el).getPropertyValue(`background-image`), // extractURL
+        }))
+        .filter((el) => el.url !== 'none'),
+    ,
     () =>
       [
         ...document.querySelectorAll([
@@ -245,14 +246,14 @@ const scrapePage = () => {
           `a[href="${location.pathname}"]+*`,
         ]),
       ]
-        .map((el) => window.getComputedStyle(el).getPropertyValue(`background-image`))
-        .filter((el) => el !== 'none')
         .map((el) => ({
           priority: 2,
           type: 'css:background-image/home-leading',
           boundingRect: getBoundingClientRect(el),
-          url: el, // extractURL
-        })),
+          url: window.getComputedStyle(el).getPropertyValue(`background-image`),
+          // extractURL
+        }))
+        .filter((el) => el.url !== 'none'),
     () =>
       [
         ...document.querySelectorAll([

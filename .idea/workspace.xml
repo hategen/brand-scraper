@@ -6,6 +6,7 @@
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
@@ -104,7 +105,8 @@
       <workItem from="1609833590326" duration="17658000" />
       <workItem from="1609866485347" duration="1605000" />
       <workItem from="1609869043447" duration="1959000" />
-      <workItem from="1610005926815" duration="17296000" />
+      <workItem from="1610005926815" duration="23307000" />
+      <workItem from="1610037706872" duration="10290000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -246,7 +248,14 @@
       <option name="project" value="LOCAL" />
       <updated>1609870401520</updated>
     </task>
-    <option name="localTasksCounter" value="21" />
+    <task id="LOCAL-00021" summary="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need">
+      <created>1610027545006</created>
+      <option name="number" value="00021" />
+      <option name="presentableId" value="LOCAL-00021" />
+      <option name="project" value="LOCAL" />
+      <updated>1610027545006</updated>
+    </task>
+    <option name="localTasksCounter" value="22" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -273,16 +282,12 @@
     <MESSAGE value="- improved screenshot palette by removing fixed 100% screen overlays &#10;- white logos with only one color now have  white  - one-color palette &#10;- logo to  icon fallback if  life gets rough" />
     <MESSAGE value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
     <MESSAGE value="- slightly  better  svg-&gt;png converter" />
-    <option name="LAST_COMMIT_MESSAGE" value="- slightly  better  svg-&gt;png converter" />
+    <MESSAGE value="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need" />
+    <option name="LAST_COMMIT_MESSAGE" value="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
-          <line>3</line>
-          <option name="timeStamp" value="18" />
-        </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/node_modules/colorthief/src/color-thief.js</url>
           <line>59</line>
@@ -299,7 +304,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
-          <line>140</line>
+          <line>145</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -308,39 +313,27 @@
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/scrape.js</url>
-          <line>89</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="136" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/scrape.js</url>
-          <line>90</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="137" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/scrape.js</url>
-          <line>88</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="139" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>32</line>
-          <option name="timeStamp" value="140" />
+          <line>44</line>
+          <option name="timeStamp" value="147" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>370</line>
+          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
+          <line>298</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="141" />
+          <option name="timeStamp" value="151" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>386</line>
+          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
+          <line>277</line>
           <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="142" />
+          <option name="timeStamp" value="161" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
+          <line>263</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="163" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

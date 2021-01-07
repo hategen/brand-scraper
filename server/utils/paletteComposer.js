@@ -1,48 +1,65 @@
 const debug = require('debug')('paletteComposer');
 const color = require('color');
 const { extname } = require('path');
+const { get, minBy, maxBy, max, orderBy, mapKeys } = require('lodash');
 const { deltaE94, getColorDiffStatus, getLuminosity, getPaletteMedianLuminocity } = require('./colors');
 const { DELTAE94_DIFF_STATUS, BUTTON_BACKGROUND_MAX_LUMINOSITY, COLOR_DISTANCE_TRESHOLD } = require('../constants.js');
-
-const { get, minBy, maxBy, max, orderBy, mapKeys } = require('lodash');
 
 const paleteHasMainColor = (palette = {}) => palette.palette && palette.palette.mainColor;
 const paleteHasColors = (palette = {}) => palette.palette.colors && palette.palette.colors.length;
 const paletteComplete = (palette = {}) => paleteHasMainColor(palette) && paleteHasColors(palette);
 
-// magick 1.png -fuzz 4% -fill White -opaque White -fuzz 0 -fill Black +opaque White -precision 15 out.png
-//magick -precision 15 out.png  -format "%[fx:int(mean*w*h+0.5)]" info:
+/*
+ *  magick 1.png -fuzz 4% -fill White -opaque White -fuzz 0 -fill Black +opaque White -precision 15 out.png
+ * magick -precision 15 out.png  -format "%[fx:int(mean*w*h+0.5)]" info:
+ */
 const isSVGPalette = (palette) =>
   palette && (extname(palette.fileName) === '.svg' || extname(palette.safeFileName) === '.svg');
 
-//gets potential brand color
-//  approach for getting barand color  or the color close to it is quite  simple
-// getting the logo palette + icon palette and looking for the colors with less delta E distance
-// assuming  that is  something those 2 share in common
-// this color  can  be quite easy  to  get  from  adequate svg but in raster could be slightly  off
+/*
+ * gets potential brand color
+ *   approach for getting barand color  or the color close to it is quite  simple
+ *  getting the logo palette + icon palette and looking for the colors with less delta E distance
+ *  assuming  that is  something those 2 share in common
+ *  this color  can  be quite easy  to  get  from  adequate svg but in raster could be slightly  off
+ */
 const getBrandColor = (logoPalette, iconPalette) => {};
 
-//gets palete list oif unique palette colors together  with  main  color
-const getFllPaletteColors = (palette) => [
-  ...new Set([get(palette, 'palette.mainColor', []), ...get(palette, 'palette.colors', [])]),
-];
+const getPaletteMainColor = (palette) => get(palette, 'palette.mainColor', []);
+const getPaletteColors = (palette) => get(palette, 'palette.colors', []);
 
-const getButtonBackgroundColor = (buttonPalette) => get(buttonPalette, 'palette.colors[1]');
+// gets palete list oif unique palette colors together  with  main  color
+const getFllPaletteColors = (palette) => [...new Set([getPaletteMainColor(palette), ...getPaletteColors(palette)])];
 
-//gets most similar color pair  from 2 palettes
-const getClosestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
+const getButtonBackgroundColor = (buttonPalette) => get(buttonPalette, 'palette.colors[1]', '#000000');
+const getButtonsWithMaxWeight = (buttonColors) => {
+  const maxWeight = max(buttonColors.map((el) => el.weight));
+  return buttonColors.filter((el) => el.weight === maxWeight);
+};
+const getMergedButtonBackgroundPalette = (buttonsPalettes = []) => {
+  return buttonsPalettes.reduce(
+    (acc, palette, idx) => {
+      if (idx === 0) {
+        acc.palette.mainColor = getButtonBackgroundColor(palette);
+      }
+      acc.palette.colors = [...new Set([...acc.palette.colors, getButtonBackgroundColor(palette)])];
+      return acc;
+    },
+    { palette: { mainColor: '#FFFFFF', colors: [] } }
+  );
+};
+// gets most similar color pair  from 2 palettes
+const mapToClosestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
   const paletteAColors = getFllPaletteColors(paletteA);
   const paletteBColors = getFllPaletteColors(paletteB);
 
-  let colorDistanceArray = paletteAColors.map((paletteAColor) => {
+  const colorDistanceArray = paletteAColors.map((paletteAColor) => {
     const closestPaletteBColor = minBy(
-      paletteBColors.map((paletteBColor) => {
-        return {
-          paletteAColor,
-          paletteBColor,
-          comparingParam: comparator(paletteAColor, paletteBColor),
-        };
-      }),
+      paletteBColors.map((paletteBColor) => ({
+        paletteAColor,
+        paletteBColor,
+        comparingParam: comparator(paletteAColor, paletteBColor),
+      })),
       'comparingParam'
     );
 
@@ -54,20 +71,18 @@ const getClosestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) =
   return orderBy(colorDistanceArray, ['comparingParam'], ['asc']);
 };
 
-//gets most distinct color pair  from 2 palettes
-const getFurthestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
+// gets most distinct color pair  from 2 palettes
+const mapToFurthestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
   const paletteAColors = getFllPaletteColors(paletteA);
   const paletteBColors = getFllPaletteColors(paletteB);
 
-  let colorDistanceArray = paletteAColors.map((paletteAColor) => {
+  const colorDistanceArray = paletteAColors.map((paletteAColor) => {
     const closestPaletteBColor = maxBy(
-      paletteBColors.map((paletteBColor) => {
-        return {
-          paletteAColor,
-          paletteBColor,
-          comparingParam: comparator(paletteAColor, paletteBColor),
-        };
-      }),
+      paletteBColors.map((paletteBColor) => ({
+        paletteAColor,
+        paletteBColor,
+        comparingParam: comparator(paletteAColor, paletteBColor),
+      })),
       'comparingParam'
     );
 
@@ -79,24 +94,33 @@ const getFurthestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) 
   return orderBy(colorDistanceArray, ['comparingParam'], ['desc']);
 };
 
+// getting array of button colors with top weights And filtering out too light colors
 const getButtonbackgroundColors = (buttonsPalettes = []) => {
   const buttonColors = orderBy(
     Object.entries(
       buttonsPalettes.reduce((acc, buttonPalette) => {
         const buttonBackgroundColor = getButtonBackgroundColor(buttonPalette);
-        acc[buttonBackgroundColor] = (acc[buttonBackgroundColor] || 0) + buttonPalette.weight;
+        if (getLuminosity(buttonBackgroundColor) < BUTTON_BACKGROUND_MAX_LUMINOSITY) {
+          acc[buttonBackgroundColor] = (acc[buttonBackgroundColor] || 0) + buttonPalette.weight;
+        }
         return acc;
       }, {})
-    ).map((el) => {
-      return { color: el[0], weight: el[1] };
-    }),
+    ).map((el) => ({ color: el[0], weight: el[1] })),
     ['weight'],
     ['desc']
   );
   return buttonColors;
 };
 
-const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], screenshotPalette) => {
+const getTopButtonColor = () => {};
+
+const composePalette_OLD = (
+  logoPalette,
+  iconPalette,
+  buttonsPalettes = [],
+  logoAreaScreenshotPalette,
+  logoAreaScreenshotPaletteWithoutBackground
+) => {
   let brandColor;
   let mainColor;
   let secondaryColor;
@@ -104,16 +128,14 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
   // 1. try main Colors from logo and  icon and match against button palettes
 
   const buttonColors = buttonsPalettes
-    .map((el) => {
-      return {
-        weight: el.weight,
-        buttonBackgroundColor: get(el, 'palette.colors[1]'),
-        buttonTextColor: get(el, 'palette.colors[0]'),
-        buttonBackgroundColorLuminosity: getLuminosity(get(el, 'palette.colors[1]')),
-        buttonTextColorLuminosity: getLuminosity(get(el, 'palette.colors[0]')),
-        buttonColorisDark: color(get(el, 'palette.colors[1]')).isDark(),
-      };
-    })
+    .map((el) => ({
+      weight: el.weight,
+      buttonBackgroundColor: get(el, 'palette.colors[1]'),
+      buttonTextColor: get(el, 'palette.colors[0]'),
+      buttonBackgroundColorLuminosity: getLuminosity(get(el, 'palette.colors[1]')),
+      buttonTextColorLuminosity: getLuminosity(get(el, 'palette.colors[0]')),
+      buttonColorisDark: color(get(el, 'palette.colors[1]')).isDark(),
+    }))
     .filter((el) => el.buttonBackgroundColorLuminosity < BUTTON_BACKGROUND_MAX_LUMINOSITY);
 
   if (paletteComplete(logoPalette) && paletteComplete(iconPalette)) {
@@ -122,17 +144,15 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
     const iconColors = get(iconPalette, 'palette.colors');
     const iconMainColor = get(iconPalette, 'palette.mainColor');
 
-    //checking logo  colors  against  icon colors  and grabbing ones with less distance
-    let colorDistanceArray = logoColors.map((lc) => {
+    // checking logo  colors  against  icon colors  and grabbing ones with less distance
+    const colorDistanceArray = logoColors.map((lc) => {
       const closestLogoIconColor = minBy(
-        iconColors.map((ic) => {
-          return {
-            logoColor: lc,
-            iconColor: ic,
-            logoToIconColorDistance: deltaE94(lc, ic),
-            logoColorIsDark: color(lc).isDark(),
-          };
-        }),
+        iconColors.map((ic) => ({
+          logoColor: lc,
+          iconColor: ic,
+          logoToIconColorDistance: deltaE94(lc, ic),
+          logoColorIsDark: color(lc).isDark(),
+        })),
         'logoToIconColorDistance'
       );
 
@@ -143,18 +163,16 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
     });
     let buttonColorsArray;
     if (buttonColors) {
-      buttonColorsArray = buttonColors.map((bc) => {
-        return minBy(
-          colorDistanceArray.map((cd) => {
-            return {
-              ...cd,
-              ...bc,
-              logoToButtonBackgroundColorDistance: deltaE94(cd.logoColor, bc.buttonBackgroundColor),
-            };
-          }),
+      buttonColorsArray = buttonColors.map((bc) =>
+        minBy(
+          colorDistanceArray.map((cd) => ({
+            ...cd,
+            ...bc,
+            logoToButtonBackgroundColorDistance: deltaE94(cd.logoColor, bc.buttonBackgroundColor),
+          })),
           'logoToButtonBackgroundColorDistance'
-        );
-      });
+        )
+      );
     }
 
     debug('DeltaArray', colorDistanceArray);
@@ -165,7 +183,7 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
     );
     debug('PotentialBrandColors', potentialBrandColors);
 
-    //if more than one take the one with max weigth
+    // if more than one take the one with max weigth
     if (potentialBrandColors.length > 1) {
       const maxWeight = max(potentialBrandColors.map((el) => el.weight));
       potentialBrandColors = potentialBrandColors.filter((el) => el.weight === maxWeight);
@@ -189,9 +207,7 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
     }
 
     secondaryColor = maxBy(
-      colorDistanceArray.map((el) => {
-        return { ...el, mainColorToLogoColorDistance: deltaE94(el.logoColor, mainColor) };
-      }),
+      colorDistanceArray.map((el) => ({ ...el, mainColorToLogoColorDistance: deltaE94(el.logoColor, mainColor) })),
       'mainColorToLogoColorDistance'
     ).logoColor;
 
@@ -200,35 +216,87 @@ const composePalette_OLD = (logoPalette, iconPalette, buttonsPalettes = [], scre
     }
 
     const logoMeanLuminace = getPaletteMedianLuminocity([logoMainColor, ...logoColors]);
-    //if (brandColorIsDark && logoMeanLuminace < 0.5) {
+    // if (brandColorIsDark && logoMeanLuminace < 0.5) {
     backgroundColor = color(secondaryColor).desaturate(0.7).lighten(3).fade(0.7).hex();
-    //}
+    // }
   }
   debug('XXXX', mainColor, secondaryColor, backgroundColor);
 
   return [mainColor, secondaryColor, backgroundColor || '#fafafa'];
 };
 
-const composePalette = (logoPalette, iconPalette, buttonsPalettes = [], screenshotPalette) => {
+const composePalette = (
+  logoPalette,
+  iconPalette,
+  buttonsPalettes = [],
+  logoAreaScreenshotPalette,
+  logoAreaScreenshotPaletteWithoutBackground,
+  fullScreenshotPalette
+) => {
   let brandColor;
   let mainColor;
   let secondaryColor;
   let backgroundColor;
 
-  // potential brand colors = > the ones that match  in  logo and icon
-  // should be taken carefully  if  super dark or super light
-  const logoToIconMatches = getClosestColors(logoPalette, iconPalette);
+  /*
+   * potential brand colors = > the ones that match  in  logo and icon
+   * should be taken carefully  if  super dark or super light
+   */
+  const logoToIconMatches = mapToClosestColors(logoPalette, iconPalette);
   debug('Color distance array', logoToIconMatches);
-
+  const closestLogoToIconColor = minBy(logoToIconMatches, 'comparingParam').paletteAColor;
   // color distinction within logo could be usefull to  find 2 most contrast colors in logo
-  const logoDistinctColors = getFurthestColors(logoPalette, logoPalette);
-  debug('Logo Color distance array', logoDistinctColors);
+  const logoSelfDistinctColors = mapToFurthestColors(logoPalette, logoPalette);
+  debug('Logo Color distance array', logoSelfDistinctColors);
 
   // button colors ordered by priority
   const buttonColors = getButtonbackgroundColors(buttonsPalettes);
-  debug('TopButton palettes', buttonColors);
+  const mergedButtonBackgroundPalette = getMergedButtonBackgroundPalette(buttonsPalettes);
+  const buttonColorsWithMaxWeight = debug('TopButton palettes', buttonColors);
 
-  return [mainColor, secondaryColor, backgroundColor || '#fafafa'];
+  const cleanBackgroundColor = getPaletteMainColor(logoAreaScreenshotPaletteWithoutBackground);
+  const dominantLogoScreenshotColor = getPaletteMainColor(logoAreaScreenshotPalette);
+
+  if (buttonColors.length && logoPalette && iconPalette) {
+    const buttonsWithMaxWeight = getButtonsWithMaxWeight(buttonColors);
+    // if there is a tie  selecting color  that is closest to logo/icon
+    if (buttonsWithMaxWeight.length > 1) {
+      const closestButtonColors = mapToClosestColors(mergedButtonBackgroundPalette, logoPalette);
+      mainColor = minBy(closestButtonColors, 'comparingParam').paletteAColor;
+    } else {
+      mainColor = maxBy(buttonColors, 'weight').color;
+    }
+  } else if (logoPalette && iconPalette) {
+    mainColor = minBy(logoToIconMatches, 'comparingParam').paletteAColor;
+  } else if (logoPalette) {
+    mainColor = getPaletteMainColor(logoPalette);
+  } else {
+    mainColor = getPaletteMainColor(fullScreenshotPalette);
+  }
+
+  if (logoPalette) {
+    const mostDistantLogoColorToMain = mapToFurthestColors(logoPalette, {
+      palette: { mainColor, colors: [mainColor] },
+    }).filter((el) => getLuminosity(el.paletteAColor) < BUTTON_BACKGROUND_MAX_LUMINOSITY);
+
+    if (mostDistantLogoColorToMain.length) {
+      secondaryColor = maxBy(mostDistantLogoColorToMain, 'comparingParam').paletteAColor;
+    } else {
+      secondaryColor = mainColor;
+    }
+  } else {
+    secondaryColor = getPaletteMainColor(fullScreenshotPalette);
+  }
+
+  /*
+   *  //main/secondary  colors too  similar  try to  check  another one
+   *  if (deltaE94(mainColor, secondaryColor) < COLOR_DISTANCE_TRESHOLD) {
+   *  let mostDistantLogoColors = maxBy(logoSelfDistinctColors, 'comparingParam');
+   *  const ditinctColorsArray = [mostDistantLogoColors.paletteAColor, mostDistantLogoColors.paletteBColor];
+   *  }
+   */
+
+  return [mainColor, secondaryColor, cleanBackgroundColor || '#fafafa'];
 };
 
 module.exports = { composePalette };

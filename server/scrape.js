@@ -21,7 +21,13 @@ const {
   getUniqueButtonsColors,
 } = require('./utils/colors');
 
-const { PALETTES_FOLDER, TMP_FOLDER, SELECTORS, MAKE_FULL_SCREENSHOT } = require('./constants');
+const {
+  PALETTES_FOLDER,
+  TMP_FOLDER,
+  SELECTORS,
+  MAKE_FULL_SCREENSHOT,
+  LOGO_BACKGROUND_PALETTE_MAX_COLORS,
+} = require('./constants');
 
 async function getScreenshotPalette(page, options) {
   const palettes = [];
@@ -34,12 +40,14 @@ async function getScreenshotPalette(page, options) {
   });
 
   if (fileName) {
-    const screenshotPalette = await getPalette(fileName);
+    const screenshotPalette = await getPalette(fileName, LOGO_BACKGROUND_PALETTE_MAX_COLORS);
     if (screenshotPalette) {
       await savePalette(screenshotPalette, fileName);
+      const customClipping = get(options, 'clip.custom', false);
       palettes.push({
         fileName,
         palette: screenshotPalette,
+        customClipping,
       });
     }
   }
@@ -86,20 +94,23 @@ async function scrape(url) {
   let screenshotPalettes = [];
   let cleanScreenshotPalettes = [];
   let clip = { x: 0, y: 0, width: 1920, height: 300 };
-  if (bestlogo.boundingRect && bestlogo.boundingRect.isVisible) {
+  if (bestlogo && bestlogo.boundingRect && bestlogo.boundingRect.isVisible) {
     const { boundingRect } = bestlogo;
     clip = {
       x: boundingRect.x,
       y: boundingRect.y,
       width: boundingRect.width,
       height: boundingRect.height,
+      custom: true,
     };
   }
+
+  await injectCodeIntoPage(page, removeOverlays);
   const fullScreenshotPalettes = await getScreenshotPalette(page);
   screenshotPalettes = await getScreenshotPalette(page, {
     clip,
   });
-  await injectCodeIntoPage(page, removeOverlays);
+
   await injectCodeIntoPage(page, removeImages);
   cleanScreenshotPalettes = await getScreenshotPalette(page, {
     clip,
@@ -119,9 +130,11 @@ async function scrape(url) {
   try {
     suggestedPalette = composePalette(
       bestlogo || bestIcon,
-      bestIcon,
+      bestIcon || bestlogo,
       [...buttonsPalettes, ...linkPalettes],
-      get(screenshotPalettes, [0])
+      get(screenshotPalettes, '[0]'),
+      get(cleanScreenshotPalettes, '[0]'),
+      get(fullScreenshotPalettes, '[0]')
     );
   } catch (e) {
     debug(e);

@@ -75,7 +75,9 @@ const {
   PALETTE_ELEMENT_WIDTH,
   PALETTES_FOLDER,
   TMP_FOLDER,
-  PALETTE_MAX_COLORS,
+  LOGO_PALETTE_MAX_COLORS,
+  FULL_SCREENSHOT_PALETTE_MAX_COLORS,
+  LOGO_BACKGROUND_PALETTE_MAX_COLORS,
   PALETTE_PIXEL_SKIP,
 } = require('../constants');
 
@@ -318,7 +320,7 @@ async function getPageImagesPalettes(images = []) {
         safeFileName = await convertICOToPNG(safeFileName);
       }
       if (safeFileName) {
-        const imagePalette = await getPalette(safeFileName);
+        const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
         //    imagePalette && (await savePalette(imagePalette, safeFileName));
         palettes.push({
           safeFileName,
@@ -333,7 +335,7 @@ async function getPageImagesPalettes(images = []) {
     } else {
       const { safeFileName, fileName } = await saveSVGData(image.url);
       if (safeFileName) {
-        const imagePalette = await getPalette(safeFileName);
+        const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
         //    imagePalette && (await savePalette(imagePalette, safeFileName));
         palettes.push({
           safeFileName,
