@@ -1,5 +1,5 @@
 const debug = require('debug')('logoSearch');
-const { orderBy, uniqBy, minBy, get } = require('lodash');
+const { orderBy, uniqBy, minBy, get, uniqWith, isEqual } = require('lodash');
 const { LOGO_TYPES, ICON_TYPES, DEFAULT_VIEWPORT } = require('../constants');
 
 const { getPaletteDistributionScore, getLuminosity } = require('./colors');
@@ -221,6 +221,7 @@ const scrapePage = () => {
           `#logo *`,
           `[aria-label*="home"] *`,
           `a[href="/"] *`,
+          `a[href="./"] *`,
           `a[href="/home"] *`,
           `[rel="home"] *`,
           `a[href="#/"] *`,
@@ -230,6 +231,7 @@ const scrapePage = () => {
           `a[href="${location.href}"] *`,
           `a[href="${location.pathname}"] *`,
           `a[href="/"]`,
+          `a[href="./"]`,
           `a[href="#/"]`,
           `a[href="${location.origin}"]`,
           `a[href="${location.origin}/"]`,
@@ -237,6 +239,7 @@ const scrapePage = () => {
           `a[href="${location.href}"]`,
           `a[href="${location.pathname}"]`,
           `a[href="/"]>*`,
+          `a[href="./"]>*`,
           `a[href="/home"]>*`,
           `a[href="#/"]>*`,
           `a[href="${location.origin}"]+*`,
@@ -260,6 +263,7 @@ const scrapePage = () => {
           `#logo img`,
           `[aria-label*="home"] img`,
           `a[href="/"] img`,
+          `a[href="./"] img`,
           `a[href="#/"] img`,
           `a[href^="/?"] img`,
           `[rel="home"] img`,
@@ -282,6 +286,7 @@ const scrapePage = () => {
           `#logo svg`,
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
+          `a[href="./"] svg`,
           `a[href="/home"] svg`,
           `a[href="#/"] svg`,
           `a[href^="/?"] svg`,
@@ -369,7 +374,7 @@ const processScrapedLogos = (logos, url) => {
       return logo;
     });
 
-  const correctLogos = uniqBy(
+  const correctLogos = uniqWith(
     orderBy(
       processedLogos.map((image) =>
         !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
@@ -382,7 +387,7 @@ const processScrapedLogos = (logos, url) => {
       ['priority'],
       ['asc']
     ),
-    'url'
+    isEqual
   );
 
   debug(JSON.stringify(correctLogos, null, 2));

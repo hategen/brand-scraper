@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en-US">
+<head title="brand-scraper report">
+
+  <style>
+    body {
+      font-family: monospace;
+    }
+
+    svg {
+      position: relative;
+      z-index: 1;
+      border-radius: 4px;
+      box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.12);
+    }
+
+    #test {
+      display: flex;
+      align-items: center;
+      justify-content: space-evenly;
+    }
+
+    .swatch {
+      font-size: 16px;
+      font-weight: bold;
+      padding-bottom: 20px;
+      display: flex;
+      justify-content: left;
+      align-items: center;
+    }
+
+    .swatch .caption {
+      padding: 20px;
+    }
+
+    .swatch .box {
+      width: 100px;
+      height: 100px;
+    }
+
+    .resources img {
+      max-width: 200px;
+    }
+
+  </style>
+  <title></title>
+</head>
+<body>
+
+<div id="test">
+  <article class="webpage">
+    <header>
+      <h3><a href="{{url}}">{{url}}</a></h3>
+
+    </header>
+    <section class="resources">
+      <pre>{{{errorMessage}}}</pre>
+      <br>
+      <br>
+      <br>
+      <pre>{{{errorStack}}}</pre>
+    </section>
+  </article>
+
+
+</div>
+</body>
+</html>

@@ -21,11 +21,11 @@ const openPage = async (browser, config) => {
 
   const { url, viewport = DEFAULT_VIEWPORT, waitTimeout = DEFAULT_PAGE_WAIT_TIMEOUT } = config;
   page.on('error', (err) => {
-    debug('error happen at the page: ', err);
+    debug('error happen at the page: ', url, err);
   });
 
   page.on('pageerror', (pageerr) => {
-    debug('pageerror occurred: ', pageerr);
+    debug('pageerror occurred: ', url, pageerr);
   });
 
   page.setViewport(viewport);

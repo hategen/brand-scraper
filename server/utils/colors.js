@@ -192,7 +192,7 @@ const getPalettesFromTags = (tagProps = [], tag) => {
 };
 
 const savePalette = async (palette, fileName) => {
-  const width = palette.colors.length * PALETTE_ELEMENT_WIDTH;
+/*  const width = palette.colors.length * PALETTE_ELEMENT_WIDTH;
   const height = PALETTE_ELEMENT_WIDTH * (palette.mainColor ? 2 : 1);
 
   const canvas = createCanvas(width, height);
@@ -212,7 +212,7 @@ const savePalette = async (palette, fileName) => {
   const stream = canvas.createPNGStream();
   stream.pipe(out);
   await finished(out);
-  debug(`The PNG palette file for ${fileName} created.`);
+  debug(`The PNG palette file for ${fileName} created.`);*/
 };
 
 const getColorThiefPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {

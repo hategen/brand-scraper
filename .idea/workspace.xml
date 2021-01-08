@@ -5,13 +5,18 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/server/scraper.hbs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/scraperError.hbs" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/scrapingTest.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/scrapingTestConfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/utils/paletteComposer.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/paletteComposer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -48,7 +53,7 @@
     <property name="javascript.nodejs.core.library.configured.version" value="12.16.3" />
     <property name="javascript.nodejs.core.library.typings.version" value="12.19.9" />
     <property name="js.linters.configure.manually.selectedeslint" value="true" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/server" />
     <property name="node.js.detected.package.eslint" value="true" />
     <property name="node.js.detected.package.standard" value="true" />
     <property name="node.js.path.for.package.eslint" value="project" />
@@ -63,6 +68,7 @@
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\Users\hateg\dev\brand-scraper\server" />
       <recent name="C:\Users\hateg\dev\brand-scraper" />
       <recent name="C:\Users\hateg\dev\brand-scraper\src" />
     </key>
@@ -71,8 +77,14 @@
       <recent name="C:\Users\hateg\dev\brand-scraper" />
     </key>
   </component>
-  <component name="RunManager" selected="Attach to Node.js/Chrome.Unnamed">
+  <component name="RunManager" selected="Node.js.ScrapeScript">
+    <configuration name="ScrapeScript" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" port="9229">
+      <method v="2" />
+    </configuration>
     <configuration name="Unnamed" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" nameIsGenerated="true" port="3777">
+      <method v="2" />
+    </configuration>
+    <configuration name="ScrapeScript" type="NodeJSConfigurationType" path-to-js-file="scrapingTest.js" working-dir="$PROJECT_DIR$/server">
       <method v="2" />
     </configuration>
     <configuration name="local" type="NodeJSConfigurationType" working-dir="$PROJECT_DIR$">
@@ -80,7 +92,9 @@
     </configuration>
     <list>
       <item itemvalue="Attach to Node.js/Chrome.Unnamed" />
+      <item itemvalue="Attach to Node.js/Chrome.ScrapeScript" />
       <item itemvalue="Node.js.local" />
+      <item itemvalue="Node.js.ScrapeScript" />
     </list>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
@@ -106,7 +120,8 @@
       <workItem from="1609866485347" duration="1605000" />
       <workItem from="1609869043447" duration="1959000" />
       <workItem from="1610005926815" duration="23307000" />
-      <workItem from="1610037706872" duration="10290000" />
+      <workItem from="1610037706872" duration="10379000" />
+      <workItem from="1610092744994" duration="17635000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -255,7 +270,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610027545006</updated>
     </task>
-    <option name="localTasksCounter" value="22" />
+    <task id="LOCAL-00022" summary="- massive improvements  in every  aspect &#10;- more reliable logo selection &#10;- much better background selection">
+      <created>1610049642579</created>
+      <option name="number" value="00022" />
+      <option name="presentableId" value="LOCAL-00022" />
+      <option name="project" value="LOCAL" />
+      <updated>1610049642579</updated>
+    </task>
+    <option name="localTasksCounter" value="23" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -283,7 +305,8 @@
     <MESSAGE value="- another dirty  hack  to fix svg  - now if only  black color  found or noc olors found in svg we convert it to  png and try  getting colors from bitmap" />
     <MESSAGE value="- slightly  better  svg-&gt;png converter" />
     <MESSAGE value="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need" />
-    <option name="LAST_COMMIT_MESSAGE" value="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need" />
+    <MESSAGE value="- massive improvements  in every  aspect &#10;- more reliable logo selection &#10;- much better background selection" />
+    <option name="LAST_COMMIT_MESSAGE" value="- massive improvements  in every  aspect &#10;- more reliable logo selection &#10;- much better background selection" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -320,20 +343,47 @@
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
           <line>298</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="151" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
           <line>277</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="161" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
           <line>263</line>
-          <properties lambdaOrdinal="-1" />
           <option name="timeStamp" value="163" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>359</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="164" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
+          <line>376</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="165" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
+          <line>51</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="169" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
+          <line>50</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="170" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
+          <line>71</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="171" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

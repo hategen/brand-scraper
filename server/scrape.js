@@ -55,10 +55,14 @@ async function getScreenshotPalette(page, options) {
 }
 
 async function scrape(url) {
-  await new Promise((resolve) => rimraf(path.join(__dirname, TMP_FOLDER, '*'), resolve));
-  await new Promise((resolve) => rimraf(path.join(__dirname, PALETTES_FOLDER, '*'), resolve));
-
+  //await new Promise((resolve) => rimraf(path.join(__dirname, TMP_FOLDER, '*'), resolve));
+  //await new Promise((resolve) => rimraf(path.join(__dirname, PALETTES_FOLDER, '*'), resolve));
+  debug('scraping page ', url);
   const { page, browser } = await init({ url });
+
+  setTimeout(() => {
+    browser && closeBrowser(browser);
+  }, 60000);
   /*
    * extracting html  content from page
    *  const pageHtml = await injectCodeIntoPage(page, extractInnerHtml);
@@ -104,9 +108,9 @@ async function scrape(url) {
       custom: true,
     };
   }
-
-  await injectCodeIntoPage(page, removeOverlays);
   const fullScreenshotPalettes = await getScreenshotPalette(page);
+  await injectCodeIntoPage(page, removeOverlays);
+
   screenshotPalettes = await getScreenshotPalette(page, {
     clip,
   });
@@ -124,8 +128,8 @@ async function scrape(url) {
 
   await closeBrowser(browser);
 
-  bestlogo && suggestedLogos.push(bestlogo);
-  bestIcon && suggestedLogos.push(bestIcon);
+  bestlogo && suggestedLogos.push({ ...bestlogo, type: 'logo' });
+  bestIcon && suggestedLogos.push({ ...bestIcon, type: 'icon' });
   let suggestedPalette = [];
   try {
     suggestedPalette = composePalette(
@@ -150,6 +154,7 @@ async function scrape(url) {
     ],
     suggestions: suggestedLogos,
     suggestedPalette,
+    screenshotFileName: fullScreenshotPalettes[0].fileName,
   };
 }
 
