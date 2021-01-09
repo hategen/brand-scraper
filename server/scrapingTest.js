@@ -1,10 +1,19 @@
 const axios = require('axios');
-const pageList = require('./scrapingTestConfig.json');
+const pageListxx = require('./scrapingTestConfig.json');
+const pageList = require('./scrapingTestConfigErrors.json');
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
 const reportTemplate = require('./scraper.hbs');
 const errorTemplate = require('./scraperError.hbs');
+
+process.on('unhandledRejection', (error) => {
+  // Will print "unhandledRejection err is not defined"
+  console.log('unhandledRejection', error.message);
+});
+process.on('uncaughtException', (err) => {
+  console.log('uncaughtException', err);
+});
 
 const scrapePage = async (url) => {
   let response;
@@ -36,9 +45,8 @@ const scrapePage = async (url) => {
 };
 
 async function scrape(pageList) {
-
-  for (let url of pageList.slice(0, 30)) {
-    const reportFileName = url.replace('://', '_').replace('.', '_').replace('/', '_');
+  for (let url of pageList.slice(730)) {
+    const reportFileName = url.replace('://', '_').replace('.', '_').replace('/', '_').replace(`\\`, '_');
     const reportPath = path.join(__dirname, 'report', `${reportFileName}.html`);
     const errorPath = path.join(__dirname, 'report', `error_${reportFileName}.html`);
     let start;
@@ -50,8 +58,10 @@ async function scrape(pageList) {
       totalTime = (Date.now() - start) / 1000;
       const { suggestedPalette, suggestions, screenshotFileName } = data;
       const [mainColor, secondaryColor, backgroundColor] = suggestedPalette;
-      const logo = suggestions.find((el) => el.type === 'logo') || suggestions.find((el) => el.type === 'icon');
-      const icon = suggestions.find((el) => el.type === 'icon') || suggestions.find((el) => el.type === 'logo');
+      const logo = suggestions.find((el) => el.type === 'logo') ||
+        suggestions.find((el) => el.type === 'icon') || { safeFileName: 'xx.png' };
+      const icon = suggestions.find((el) => el.type === 'icon') ||
+        suggestions.find((el) => el.type === 'logo') || { safeFileName: 'xx.png' };
 
       const output = reportTemplate({
         totalTime,

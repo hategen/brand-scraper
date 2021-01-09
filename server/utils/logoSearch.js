@@ -337,7 +337,7 @@ const adjustWeights = (logoPalettes) => {
     if (logo.palette && logo.palette.colors.length === 1 && ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])) {
       logo.priority += 1;
     }
-    if (logo.palette && logo.palette.mainColor && ['#000000', '#ffffff'].includes(logo.palette.mainColor)) {
+    if (logo.palette && logo.palette.mainColor && ['#000000', '#FFFFFF'].includes(logo.palette.mainColor)) {
       logo.priority += 1;
     }
 

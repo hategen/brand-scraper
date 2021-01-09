@@ -3,11 +3,28 @@ const color = require('color');
 const { extname } = require('path');
 const { get, minBy, maxBy, max, orderBy, mapKeys } = require('lodash');
 const { deltaE94, getColorDiffStatus, getLuminosity, getPaletteMedianLuminocity } = require('./colors');
-const { DELTAE94_DIFF_STATUS, BUTTON_BACKGROUND_MAX_LUMINOSITY, COLOR_DISTANCE_TRESHOLD } = require('../constants.js');
+const {
+  DELTAE94_DIFF_STATUS,
+  BUTTON_BACKGROUND_MAX_LUMINOSITY,
+  COLOR_DISTANCE_TRESHOLD,
+  FALLBACK_BACKGROUND_COLOR,
+  BUTTON_TO_BACKGROUND_LUMINOSITY_DIST,
+  BACKGROUND_MAX_LUMINOSITY,
+} = require('../constants.js');
+const chroma = require('chroma-js');
 
 const paleteHasMainColor = (palette = {}) => palette.palette && palette.palette.mainColor;
 const paleteHasColors = (palette = {}) => palette.palette.colors && palette.palette.colors.length;
 const paletteComplete = (palette = {}) => paleteHasMainColor(palette) && paleteHasColors(palette);
+const paletteIsWhite = (palette) => {
+  return (
+    paleteHasMainColor(palette) &&
+    paleteHasMainColor(palette) &&
+    getPaletteMainColor(palette) === '#FFFFFF' &&
+    getPaletteColors(palette).length === 1 &&
+    getPaletteColors(palette)[0] === '#FFFFFF'
+  );
+};
 
 /*
  *  magick 1.png -fuzz 4% -fill White -opaque White -fuzz 0 -fill Black +opaque White -precision 15 out.png
@@ -45,9 +62,17 @@ const getMergedButtonBackgroundPalette = (buttonsPalettes = []) => {
       acc.palette.colors = [...new Set([...acc.palette.colors, getButtonBackgroundColor(palette)])];
       return acc;
     },
-    { palette: { mainColor: '#FFFFFF', colors: [] } }
+    {
+      palette: {
+        mainColor: '#FFFFFF',
+        colors: [],
+      },
+    }
   );
 };
+
+const checkLuminosity = (color) => getLuminosity(color) < BUTTON_BACKGROUND_MAX_LUMINOSITY;
+const getLuminosityDiff = (colorA, colorB) => Math.abs(getLuminosity(colorA) - getLuminosity(colorB));
 // gets most similar color pair  from 2 palettes
 const mapToClosestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
   const paletteAColors = getFllPaletteColors(paletteA);
@@ -105,7 +130,10 @@ const getButtonbackgroundColors = (buttonsPalettes = []) => {
         }
         return acc;
       }, {})
-    ).map((el) => ({ color: el[0], weight: el[1] })),
+    ).map((el) => ({
+      color: el[0],
+      weight: el[1],
+    })),
     ['weight'],
     ['desc']
   );
@@ -207,7 +235,10 @@ const composePalette_OLD = (
     }
 
     secondaryColor = maxBy(
-      colorDistanceArray.map((el) => ({ ...el, mainColorToLogoColorDistance: deltaE94(el.logoColor, mainColor) })),
+      colorDistanceArray.map((el) => ({
+        ...el,
+        mainColorToLogoColorDistance: deltaE94(el.logoColor, mainColor),
+      })),
       'mainColorToLogoColorDistance'
     ).logoColor;
 
@@ -238,6 +269,9 @@ const composePalette = (
   let secondaryColor;
   let backgroundColor;
 
+  let logoIsWhite = paletteIsWhite(logoPalette);
+  let iconIsWhite = paletteIsWhite(iconPalette);
+  let buttonsPresent = buttonsPalettes.length;
   /*
    * potential brand colors = > the ones that match  in  logo and icon
    * should be taken carefully  if  super dark or super light
@@ -249,43 +283,125 @@ const composePalette = (
   const logoSelfDistinctColors = mapToFurthestColors(logoPalette, logoPalette);
   debug('Logo Color distance array', logoSelfDistinctColors);
 
-  // button colors ordered by priority
+  // button colors ordered by priority //with filtered out  light colors
   const buttonColors = getButtonbackgroundColors(buttonsPalettes);
   const mergedButtonBackgroundPalette = getMergedButtonBackgroundPalette(buttonsPalettes);
   const buttonColorsWithMaxWeight = debug('TopButton palettes', buttonColors);
 
   const cleanBackgroundColor = getPaletteMainColor(logoAreaScreenshotPaletteWithoutBackground);
   const dominantLogoScreenshotColor = getPaletteMainColor(logoAreaScreenshotPalette);
+  //if logo is white  it is easy  to  be tricked
+  // getting  potential background color from the logo or 'logo' or header section by filtering out darkest color
 
-  if (buttonColors.length && logoPalette && iconPalette) {
-    const buttonsWithMaxWeight = getButtonsWithMaxWeight(buttonColors);
-    // if there is a tie  selecting color  that is closest to logo/icon
-    if (buttonsWithMaxWeight.length > 1) {
-      const closestButtonColors = mapToClosestColors(mergedButtonBackgroundPalette, logoPalette);
-      mainColor = minBy(closestButtonColors, 'comparingParam').paletteAColor;
-    } else {
-      mainColor = maxBy(buttonColors, 'weight').color;
+  if (logoIsWhite && !iconIsWhite) {
+    const loogoBackgroundColors = [
+      ...getFllPaletteColors(logoAreaScreenshotPalette),
+      ...getFllPaletteColors(logoAreaScreenshotPaletteWithoutBackground),
+    ]
+      .filter(checkLuminosity)
+      .map((el) => {
+        return {
+          color: el,
+          luminosity: getLuminosity(el),
+        };
+      });
+
+    if (loogoBackgroundColors.length) {
+      backgroundColor = minBy(loogoBackgroundColors, 'luminosity').color;
     }
-  } else if (logoPalette && iconPalette) {
-    mainColor = minBy(logoToIconMatches, 'comparingParam').paletteAColor;
-  } else if (logoPalette) {
-    mainColor = getPaletteMainColor(logoPalette);
+    //getting buttons with most different color relative to background
+    if (buttonsPresent) {
+      const potentialMainColor = mapToFurthestColors(mergedButtonBackgroundPalette, {
+        palette: { mainColor: backgroundColor, colors: [backgroundColor] },
+      }).paletteAColor;
+
+      if (potentialMainColor && deltaE94(potentialMainColor, backgroundColor) < COLOR_DISTANCE_TRESHOLD) {
+        mainColor = mapToFurthestColors(mergedButtonBackgroundPalette, {
+          palette: { mainColor: potentialMainColor, colors: [potentialMainColor] },
+        }).paletteAColor;
+      } else if (!potentialMainColor) {
+        mainColor = maxBy(
+          mapToFurthestColors(iconPalette, {
+            palette: { mainColor: backgroundColor, colors: [backgroundColor] },
+          }),
+          'comparingParam'
+        ).paletteAColor;
+      } else {
+        mainColor = potentialMainColor;
+      }
+    } else {
+      mainColor = getPaletteMainColor(iconPalette);
+    }
   } else {
-    mainColor = getPaletteMainColor(fullScreenshotPalette);
+    if (buttonColors.length && logoPalette && iconPalette) {
+      const buttonsWithMaxWeight = getButtonsWithMaxWeight(buttonColors);
+      // if there is a tie  selecting color  that is closest to logo/icon
+      if (buttonsWithMaxWeight.length > 1) {
+        const closestButtonColors = mapToClosestColors(mergedButtonBackgroundPalette, logoPalette);
+        mainColor = minBy(closestButtonColors, 'comparingParam').paletteAColor;
+      } else {
+        mainColor = maxBy(buttonColors, 'weight').color;
+      }
+    } else if (logoPalette && iconPalette) {
+      mainColor = minBy(logoToIconMatches, 'comparingParam').paletteAColor;
+    } else if (logoPalette) {
+      mainColor = getPaletteMainColor(logoPalette);
+    } else {
+      mainColor = getPaletteMainColor(fullScreenshotPalette);
+    }
+
+    if (logoPalette) {
+      const mostDistantLogoColorToMain = mapToFurthestColors(logoPalette, {
+        palette: {
+          mainColor,
+          colors: [mainColor],
+        },
+      }).filter((el) => checkLuminosity(el.paletteAColor));
+
+      if (mostDistantLogoColorToMain.length) {
+        secondaryColor = maxBy(mostDistantLogoColorToMain, 'comparingParam').paletteAColor;
+      } else {
+        secondaryColor = mainColor;
+      }
+    } else {
+      secondaryColor = getPaletteMainColor(fullScreenshotPalette);
+    }
   }
 
-  if (logoPalette) {
-    const mostDistantLogoColorToMain = mapToFurthestColors(logoPalette, {
-      palette: { mainColor, colors: [mainColor] },
-    }).filter((el) => getLuminosity(el.paletteAColor) < BUTTON_BACKGROUND_MAX_LUMINOSITY);
+  getLuminosity(cleanBackgroundColor);
 
-    if (mostDistantLogoColorToMain.length) {
-      secondaryColor = maxBy(mostDistantLogoColorToMain, 'comparingParam').paletteAColor;
+  if (getLuminosity(cleanBackgroundColor) === 1) {
+    backgroundColor = chroma(mainColor).luminance(0.8).desaturate(2).hex();
+  } else if (
+    (deltaE94(mainColor, cleanBackgroundColor) > COLOR_DISTANCE_TRESHOLD ||
+      getLuminosityDiff(mainColor, cleanBackgroundColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
+    getLuminosity(cleanBackgroundColor) <= BACKGROUND_MAX_LUMINOSITY
+  ) {
+    if (!logoAreaScreenshotPaletteWithoutBackground.customClipping) {
+      backgroundColor = chroma(cleanBackgroundColor).luminance(0.8).hex();
     } else {
-      secondaryColor = mainColor;
+      backgroundColor = cleanBackgroundColor;
+    }
+  } else if (
+    (deltaE94(mainColor, dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD ||
+      getLuminosityDiff(mainColor, dominantLogoScreenshotColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
+    getLuminosity(dominantLogoScreenshotColor) <= BACKGROUND_MAX_LUMINOSITY
+  ) {
+    if (!logoAreaScreenshotPalette.customClipping) {
+      backgroundColor = chroma(dominantLogoScreenshotColor).luminance(0.8).hex();
+    } else {
+      backgroundColor =
+        deltaE94(getPaletteMainColor(logoPalette), dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD
+          ? dominantLogoScreenshotColor
+          : chroma(mainColor).luminance(0.8).desaturate(2).hex();
     }
   } else {
-    secondaryColor = getPaletteMainColor(fullScreenshotPalette);
+    const mainColorLuminosity = getLuminosity(mainColor);
+    const backgroundLuminosity =
+      mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST <= BACKGROUND_MAX_LUMINOSITY
+        ? mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST
+        : mainColorLuminosity - BUTTON_TO_BACKGROUND_LUMINOSITY_DIST;
+    backgroundColor = chroma(mainColor).luminance(backgroundLuminosity).hex();
   }
 
   /*
@@ -296,7 +412,7 @@ const composePalette = (
    *  }
    */
 
-  return [mainColor, secondaryColor, cleanBackgroundColor || '#fafafa'];
+  return [mainColor, secondaryColor || mainColor, backgroundColor || cleanBackgroundColor || FALLBACK_BACKGROUND_COLOR];
 };
 
 module.exports = { composePalette };

@@ -5,7 +5,7 @@ const { DEFAULT_VIEWPORT, DEFAULT_PAGE_WAIT_TIMEOUT, OVERRIDE_USER_AGENT, USER_A
 
 const openBrowser = async () => {
   debug('Browser open START');
-  const browser = await puppeteer.launch({ headless: true });
+  const browser = await puppeteer.launch({ headless: true, ignoreHTTPSErrors: true });
   debug('Browser open END');
   return browser;
 };
@@ -42,15 +42,24 @@ const openPage = async (browser, config) => {
 };
 
 const init = async function (config) {
-  const browser = await openBrowser();
-  const page = await openPage(browser, config);
-  if (OVERRIDE_USER_AGENT) {
-    await page.setUserAgent(USER_AGENT);
+  let browser;
+  try {
+    browser = await openBrowser();
+    const page = await openPage(browser, config);
+    if (OVERRIDE_USER_AGENT) {
+      await page.setUserAgent(USER_AGENT);
+    }
+    return {
+      page,
+      browser,
+    };
+  } catch (e) {
+    if (browser) {
+      await closeBrowser(browser);
+    }
+
+    throw e;
   }
-  return {
-    page,
-    browser,
-  };
 };
 
 const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFuncArgs) {

@@ -5,18 +5,17 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d404e9c-96b9-461c-8a32-ccda8fbd0d41" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/server/scraper.hbs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/scraperError.hbs" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/scrapingTest.js" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/server/scrapingTestConfig.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.eslintcache" beforeDir="false" afterPath="$PROJECT_DIR$/.eslintcache" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/cleanList.json" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/errLIst.js" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/server/scrapingTestConfigErrors.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/constants.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/constants.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/scrape.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrape.js" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/server/utils/colors.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/colors.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/scrapingTest.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrapingTest.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/scrapingTestConfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/server/scrapingTestConfig.json" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/headlessScraper.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/headlessScraper.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/server/utils/logoSearch.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/logoSearch.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/server/utils/paletteComposer.js" beforeDir="false" afterPath="$PROJECT_DIR$/server/utils/paletteComposer.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -77,7 +76,7 @@
       <recent name="C:\Users\hateg\dev\brand-scraper" />
     </key>
   </component>
-  <component name="RunManager" selected="Node.js.ScrapeScript">
+  <component name="RunManager" selected="Attach to Node.js/Chrome.Unnamed">
     <configuration name="ScrapeScript" type="ChromiumRemoteDebugType" factoryName="Chromium Remote" port="9229">
       <method v="2" />
     </configuration>
@@ -85,6 +84,9 @@
       <method v="2" />
     </configuration>
     <configuration name="ScrapeScript" type="NodeJSConfigurationType" path-to-js-file="scrapingTest.js" working-dir="$PROJECT_DIR$/server">
+      <method v="2" />
+    </configuration>
+    <configuration name="errLIst.js" type="NodeJSConfigurationType" temporary="true" nameIsGenerated="true" path-to-js-file="$PROJECT_DIR$/server/errLIst.js" working-dir="$PROJECT_DIR$/server">
       <method v="2" />
     </configuration>
     <configuration name="local" type="NodeJSConfigurationType" working-dir="$PROJECT_DIR$">
@@ -95,7 +97,13 @@
       <item itemvalue="Attach to Node.js/Chrome.ScrapeScript" />
       <item itemvalue="Node.js.local" />
       <item itemvalue="Node.js.ScrapeScript" />
+      <item itemvalue="Node.js.errLIst.js" />
     </list>
+    <recent_temporary>
+      <list>
+        <item itemvalue="Node.js.errLIst.js" />
+      </list>
+    </recent_temporary>
   </component>
   <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
   <component name="TaskManager">
@@ -121,7 +129,11 @@
       <workItem from="1609869043447" duration="1959000" />
       <workItem from="1610005926815" duration="23307000" />
       <workItem from="1610037706872" duration="10379000" />
-      <workItem from="1610092744994" duration="17635000" />
+      <workItem from="1610092744994" duration="25870000" />
+      <workItem from="1610132480341" duration="2309000" />
+      <workItem from="1610138339279" duration="2582000" />
+      <workItem from="1610178283581" duration="2927000" />
+      <workItem from="1610189206244" duration="11398000" />
     </task>
     <task id="LOCAL-00001" summary="initial commit">
       <created>1608112333014</created>
@@ -277,7 +289,14 @@
       <option name="project" value="LOCAL" />
       <updated>1610049642579</updated>
     </task>
-    <option name="localTasksCounter" value="23" />
+    <task id="LOCAL-00023" summary="- added automated script for checking  bathed data&#10;- added  template for testing &#10;-  minor fixes &#10;- improved stability  of the process">
+      <created>1610116290034</created>
+      <option name="number" value="00023" />
+      <option name="presentableId" value="LOCAL-00023" />
+      <option name="project" value="LOCAL" />
+      <updated>1610116290034</updated>
+    </task>
+    <option name="localTasksCounter" value="24" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -306,7 +325,8 @@
     <MESSAGE value="- slightly  better  svg-&gt;png converter" />
     <MESSAGE value="- better approach to  screenshoting &#10;- added  visibility  priority &#10;- minimizing full screenshot need" />
     <MESSAGE value="- massive improvements  in every  aspect &#10;- more reliable logo selection &#10;- much better background selection" />
-    <option name="LAST_COMMIT_MESSAGE" value="- massive improvements  in every  aspect &#10;- more reliable logo selection &#10;- much better background selection" />
+    <MESSAGE value="- added automated script for checking  bathed data&#10;- added  template for testing &#10;-  minor fixes &#10;- improved stability  of the process" />
+    <option name="LAST_COMMIT_MESSAGE" value="- added automated script for checking  bathed data&#10;- added  template for testing &#10;-  minor fixes &#10;- improved stability  of the process" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -327,7 +347,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
-          <line>145</line>
+          <line>154</line>
           <option name="timeStamp" value="93" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
@@ -336,54 +356,43 @@
           <option name="timeStamp" value="105" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>44</line>
-          <option name="timeStamp" value="147" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
-          <line>298</line>
-          <option name="timeStamp" value="151" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
-          <line>277</line>
-          <option name="timeStamp" value="161" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
-          <line>263</line>
-          <option name="timeStamp" value="163" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>359</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="164" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
-          <url>file://$PROJECT_DIR$/server/utils/logoSearch.js</url>
-          <line>376</line>
-          <properties lambdaOrdinal="-1" />
-          <option name="timeStamp" value="165" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
-          <line>51</line>
-          <properties lambdaOrdinal="-1" />
+          <line>59</line>
           <option name="timeStamp" value="169" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
-          <line>50</line>
-          <properties lambdaOrdinal="-1" />
+          <line>58</line>
           <option name="timeStamp" value="170" />
         </line-breakpoint>
         <line-breakpoint enabled="true" type="javascript">
           <url>file://$PROJECT_DIR$/server/scrapingTest.js</url>
-          <line>71</line>
-          <properties lambdaOrdinal="-1" />
+          <line>81</line>
           <option name="timeStamp" value="171" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/headlessScraper.js</url>
+          <line>57</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="183" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/errLIst.js</url>
+          <line>22</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="184" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
+          <line>372</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="195" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" type="javascript">
+          <url>file://$PROJECT_DIR$/server/utils/paletteComposer.js</url>
+          <line>374</line>
+          <properties lambdaOrdinal="-1" />
+          <option name="timeStamp" value="196" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

@@ -135,13 +135,15 @@ async function scrape(url) {
     suggestedPalette = composePalette(
       bestlogo || bestIcon,
       bestIcon || bestlogo,
-      [...buttonsPalettes, ...linkPalettes],
+      [...buttonsPalettes], //[...buttonsPalettes, ...linkPalettes],
       get(screenshotPalettes, '[0]'),
       get(cleanScreenshotPalettes, '[0]'),
       get(fullScreenshotPalettes, '[0]')
     );
   } catch (e) {
     debug(e);
+  } finally {
+    await closeBrowser(browser);
   }
   return {
     rawPalettes: [
