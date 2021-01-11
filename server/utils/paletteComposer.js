@@ -371,14 +371,14 @@ const composePalette = (
   getLuminosity(cleanBackgroundColor);
 
   if (getLuminosity(cleanBackgroundColor) === 1) {
-    backgroundColor = chroma(mainColor).luminance(0.8).desaturate(2).hex();
+    backgroundColor = chroma(mainColor).luminance(0.85).desaturate(1).hex();
   } else if (
     (deltaE94(mainColor, cleanBackgroundColor) > COLOR_DISTANCE_TRESHOLD ||
       getLuminosityDiff(mainColor, cleanBackgroundColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
     getLuminosity(cleanBackgroundColor) <= BACKGROUND_MAX_LUMINOSITY
   ) {
     if (!logoAreaScreenshotPaletteWithoutBackground.customClipping) {
-      backgroundColor = chroma(cleanBackgroundColor).luminance(0.8).hex();
+      backgroundColor = chroma.mix(mainColor, chroma(cleanBackgroundColor).luminance(0.9).hex()).hex();
     } else {
       backgroundColor = cleanBackgroundColor;
     }
@@ -388,12 +388,12 @@ const composePalette = (
     getLuminosity(dominantLogoScreenshotColor) <= BACKGROUND_MAX_LUMINOSITY
   ) {
     if (!logoAreaScreenshotPalette.customClipping) {
-      backgroundColor = chroma(dominantLogoScreenshotColor).luminance(0.8).hex();
+      backgroundColor = chroma.mix(mainColor, chroma(dominantLogoScreenshotColor).luminance(0.9).hex()).hex();
     } else {
       backgroundColor =
         deltaE94(getPaletteMainColor(logoPalette), dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD
           ? dominantLogoScreenshotColor
-          : chroma(mainColor).luminance(0.8).desaturate(2).hex();
+          : chroma(mainColor).luminance(0.9).hex();
     }
   } else {
     const mainColorLuminosity = getLuminosity(mainColor);

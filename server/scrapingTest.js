@@ -1,6 +1,6 @@
 const axios = require('axios');
 const pageListxx = require('./scrapingTestConfig.json');
-const pageList = require('./scrapingTestConfigErrors.json');
+const pageList = require('./cleanList.json');
 const handlebars = require('handlebars');
 const path = require('path');
 const fs = require('fs');
@@ -45,7 +45,7 @@ const scrapePage = async (url) => {
 };
 
 async function scrape(pageList) {
-  for (let url of pageList.slice(730)) {
+  for (let url of pageList) {
     const reportFileName = url.replace('://', '_').replace('.', '_').replace('/', '_').replace(`\\`, '_');
     const reportPath = path.join(__dirname, 'report', `${reportFileName}.html`);
     const errorPath = path.join(__dirname, 'report', `error_${reportFileName}.html`);
