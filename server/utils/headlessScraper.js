@@ -73,8 +73,8 @@ const injectCodeIntoPage = async function (page, injectableFunc, ...injectableFu
 };
 
 const removeOverlays = () => {
-  const viewportWidth = window.innerWidth;
-  const viewportHeight = window.innerHeight;
+  const viewportWidth = document.documentElement.clientWidth;
+  const viewportHeight = document.documentElement.clientHeight;
   const allElements = document.getElementsByTagName('*');
 
   for (let i = 0, { length } = allElements; i < length; i++) {
@@ -141,6 +141,7 @@ const getPropsBySelector = (selectors, properties) => {
       //   el.focus();
       const computedStyle = window.getComputedStyle(el);
       const elementColors = {};
+      elementColors['element'] = el;
       properties.forEach((property) => {
         const value = computedStyle.getPropertyValue(property);
         elementColors[property] = value;
@@ -152,7 +153,20 @@ const getPropsBySelector = (selectors, properties) => {
     });
   });
 
-  return colors;
+  return colors
+    .filter((el) => {
+      const dim = el.element.getBoundingClientRect();
+      if (dim.width >= 30 && dim.width <= 300 && dim.height >= 20 && dim.height <= 80) {
+        return true;
+      }
+      return false;
+    })
+    .map((el) => {
+      return {
+        color: el.color,
+        'background-color': el['background-color'],
+      };
+    });
 };
 
 module.exports = {

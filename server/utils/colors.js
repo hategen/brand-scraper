@@ -13,6 +13,7 @@ const { DELTAE94_DIFF_STATUS } = require('../constants.js');
 const gm = require('gm').subClass({ imageMagick: true });
 const svg2png = require('svg2png');
 const svg2img = require('svg2img');
+const https = require('https');
 
 const color = require('color');
 
@@ -135,6 +136,9 @@ const saveImage = async (url, fileName = '') => {
       url,
       method: 'get',
       responseType: 'stream',
+      httpsAgent: new https.Agent({
+        rejectUnauthorized: false
+      })
     });
     //removing querystring
     fileName = fileName || url.split('/').pop().split('?').shift();
@@ -285,7 +289,8 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
 
   return palette;
 };
-
+//gm
+// stream->stream
 const convertICOToPNG = (fileName) => {
   return new Promise((resolve, reject) => {
     const convertedFilename = `${fileName.replace('.ico', '.png')}`;

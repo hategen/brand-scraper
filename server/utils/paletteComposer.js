@@ -293,7 +293,7 @@ const composePalette = (
   //if logo is white  it is easy  to  be tricked
   // getting  potential background color from the logo or 'logo' or header section by filtering out darkest color
 
-  if (logoIsWhite && !iconIsWhite) {
+  if ((logoIsWhite && !iconIsWhite) || (logoIsWhite && iconIsWhite)) {
     const loogoBackgroundColors = [
       ...getFllPaletteColors(logoAreaScreenshotPalette),
       ...getFllPaletteColors(logoAreaScreenshotPaletteWithoutBackground),
@@ -311,14 +311,24 @@ const composePalette = (
     }
     //getting buttons with most different color relative to background
     if (buttonsPresent) {
-      const potentialMainColor = mapToFurthestColors(mergedButtonBackgroundPalette, {
-        palette: { mainColor: backgroundColor, colors: [backgroundColor] },
-      }).paletteAColor;
+      const potentialMainColor = maxBy(
+        mapToFurthestColors(mergedButtonBackgroundPalette, {
+          palette: { mainColor: backgroundColor, colors: [backgroundColor] },
+        }),
+        'comparingParam'
+      ).paletteAColor;
 
-      if (potentialMainColor && deltaE94(potentialMainColor, backgroundColor) < COLOR_DISTANCE_TRESHOLD) {
-        mainColor = mapToFurthestColors(mergedButtonBackgroundPalette, {
-          palette: { mainColor: potentialMainColor, colors: [potentialMainColor] },
-        }).paletteAColor;
+      if (
+        potentialMainColor &&
+        deltaE94(potentialMainColor, backgroundColor) < COLOR_DISTANCE_TRESHOLD &&
+        checkLuminosity(potentialMainColor)
+      ) {
+        mainColor = maxBy(
+          mapToFurthestColors(mergedButtonBackgroundPalette, {
+            palette: { mainColor: potentialMainColor, colors: [potentialMainColor] },
+          }),
+          'comparingParam'
+        ).paletteAColor;
       } else if (!potentialMainColor) {
         mainColor = maxBy(
           mapToFurthestColors(iconPalette, {
@@ -326,8 +336,11 @@ const composePalette = (
           }),
           'comparingParam'
         ).paletteAColor;
+        if (!checkLuminosity(mainColor)) {
+          mainColor = '#000000';
+        }
       } else {
-        mainColor = potentialMainColor;
+        mainColor = '#000000';
       }
     } else {
       mainColor = getPaletteMainColor(iconPalette);
@@ -366,42 +379,40 @@ const composePalette = (
     } else {
       secondaryColor = getPaletteMainColor(fullScreenshotPalette);
     }
-  }
 
-  getLuminosity(cleanBackgroundColor);
-
-  if (getLuminosity(cleanBackgroundColor) === 1) {
-    backgroundColor = chroma(mainColor).luminance(0.85).desaturate(1).hex();
-  } else if (
-    (deltaE94(mainColor, cleanBackgroundColor) > COLOR_DISTANCE_TRESHOLD ||
-      getLuminosityDiff(mainColor, cleanBackgroundColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
-    getLuminosity(cleanBackgroundColor) <= BACKGROUND_MAX_LUMINOSITY
-  ) {
-    if (!logoAreaScreenshotPaletteWithoutBackground.customClipping) {
-      backgroundColor = chroma.mix(mainColor, chroma(cleanBackgroundColor).luminance(0.9).hex()).hex();
+    if (getLuminosity(cleanBackgroundColor) === 1) {
+      backgroundColor = chroma(mainColor).luminance(0.85).desaturate(1).hex();
+    } else if (
+      (deltaE94(mainColor, cleanBackgroundColor) > COLOR_DISTANCE_TRESHOLD ||
+        getLuminosityDiff(mainColor, cleanBackgroundColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
+      getLuminosity(cleanBackgroundColor) <= BACKGROUND_MAX_LUMINOSITY
+    ) {
+      if (!logoAreaScreenshotPaletteWithoutBackground.customClipping) {
+        backgroundColor = chroma.mix(mainColor, chroma(cleanBackgroundColor).luminance(0.9).hex()).hex();
+      } else {
+        backgroundColor = cleanBackgroundColor;
+      }
+    } else if (
+      (deltaE94(mainColor, dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD ||
+        getLuminosityDiff(mainColor, dominantLogoScreenshotColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
+      getLuminosity(dominantLogoScreenshotColor) <= BACKGROUND_MAX_LUMINOSITY
+    ) {
+      if (!logoAreaScreenshotPalette.customClipping) {
+        backgroundColor = chroma.mix(mainColor, chroma(dominantLogoScreenshotColor).luminance(0.9).hex()).hex();
+      } else {
+        backgroundColor =
+          deltaE94(getPaletteMainColor(logoPalette), dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD
+            ? dominantLogoScreenshotColor
+            : chroma(mainColor).luminance(0.9).hex();
+      }
     } else {
-      backgroundColor = cleanBackgroundColor;
+      const mainColorLuminosity = getLuminosity(mainColor);
+      const backgroundLuminosity =
+        mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST <= BACKGROUND_MAX_LUMINOSITY
+          ? mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST
+          : mainColorLuminosity - BUTTON_TO_BACKGROUND_LUMINOSITY_DIST;
+      backgroundColor = chroma(mainColor).luminance(backgroundLuminosity).hex();
     }
-  } else if (
-    (deltaE94(mainColor, dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD ||
-      getLuminosityDiff(mainColor, dominantLogoScreenshotColor) >= BUTTON_TO_BACKGROUND_LUMINOSITY_DIST) &&
-    getLuminosity(dominantLogoScreenshotColor) <= BACKGROUND_MAX_LUMINOSITY
-  ) {
-    if (!logoAreaScreenshotPalette.customClipping) {
-      backgroundColor = chroma.mix(mainColor, chroma(dominantLogoScreenshotColor).luminance(0.9).hex()).hex();
-    } else {
-      backgroundColor =
-        deltaE94(getPaletteMainColor(logoPalette), dominantLogoScreenshotColor) > COLOR_DISTANCE_TRESHOLD
-          ? dominantLogoScreenshotColor
-          : chroma(mainColor).luminance(0.9).hex();
-    }
-  } else {
-    const mainColorLuminosity = getLuminosity(mainColor);
-    const backgroundLuminosity =
-      mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST <= BACKGROUND_MAX_LUMINOSITY
-        ? mainColorLuminosity + BUTTON_TO_BACKGROUND_LUMINOSITY_DIST
-        : mainColorLuminosity - BUTTON_TO_BACKGROUND_LUMINOSITY_DIST;
-    backgroundColor = chroma(mainColor).luminance(backgroundLuminosity).hex();
   }
 
   /*

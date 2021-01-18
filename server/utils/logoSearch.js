@@ -175,12 +175,13 @@ const scrapePage = () => {
       [...document.querySelectorAll(`meta[itemprop*="image"]`)].map((el) => ({
         type: 'meta-content/image',
         boundingRect: getBoundingClientRect(el),
-        priority: 4,
+        priority: 5,
         url: el.getAttribute('content'),
       })),
     () =>
       [...document.querySelectorAll(`script[type*="application/ld+json"]`)].map((el) => ({
         type: 'json-ld-logo',
+        priority: 4,
         boundingRect: getBoundingClientRect(el),
         url: el.innerHTML, // findJsonLdImages
       })),
@@ -200,15 +201,15 @@ const scrapePage = () => {
       })),
     () =>
       [...document.querySelectorAll(`${headerSelectorPart} img[src*="logo"]`)].map((el) => ({
-        priority: 3,
+        priority: 4,
         type: 'img-src/logo-class',
         boundingRect: getBoundingClientRect(el),
         url: el.getAttribute('src'),
       })),
     () =>
-      [...document.querySelectorAll([`[class*="logo"] *`, `#logo *`])]
+      [...document.querySelectorAll([`#logo *`, `nav .logo`, `.nav .logo`, `#nav .logo`])]
         .map((el) => ({
-          priority: 4,
+          priority: 3,
           type: 'css:background-image',
           boundingRect: getBoundingClientRect(el),
           url: window.getComputedStyle(el).getPropertyValue(`background-image`), // extractURL
@@ -261,6 +262,7 @@ const scrapePage = () => {
       [
         ...document.querySelectorAll([
           `#logo img`,
+          `img#logo`,
           `[aria-label*="home"] img`,
           `a[href="/"] img`,
           `a[href="./"] img`,
@@ -284,6 +286,7 @@ const scrapePage = () => {
       [
         ...document.querySelectorAll([
           `#logo svg`,
+          `svg#logo`,
           `[aria-label*="home"] svg`,
           `a[href="/"] svg`,
           `a[href="./"] svg`,
@@ -323,18 +326,29 @@ const logoProcessors = {
 
 const adjustWeights = (logoPalettes) => {
   logoPalettes.forEach((logo) => {
-    if (logo.type !== 'img-nested/home-leading-svg' && logo.fileName.endsWith('.svg')) {
+    const isSVG = logo.fileName.endsWith('.svg');
+    if (logo.type !== 'img-nested/home-leading-svg' && isSVG) {
       logo.priority -= 1;
     }
     if (LOGO_TYPES.includes(logo.type) && !logo.palette) {
       logo.priority += 1;
     }
 
-    if (LOGO_TYPES.includes(logo.type) && logo.palette && (!logo.palette.colors || logo.palette.colors.length === 0)) {
+    if (
+      !isSVG &&
+      LOGO_TYPES.includes(logo.type) &&
+      logo.palette &&
+      (!logo.palette.colors || logo.palette.colors.length === 0)
+    ) {
       logo.priority += 1;
     }
 
-    if (logo.palette && logo.palette.colors.length === 1 && ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])) {
+    if (
+      !isSVG &&
+      logo.palette &&
+      logo.palette.colors.length === 1 &&
+      ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])
+    ) {
       logo.priority += 1;
     }
     if (logo.palette && logo.palette.mainColor && ['#000000', '#FFFFFF'].includes(logo.palette.mainColor)) {
