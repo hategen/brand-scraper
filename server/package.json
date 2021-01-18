@@ -16,6 +16,7 @@
     "color-convert": "^2.0.1",
     "color-diff": "^1.2.0",
     "colorthief": "^2.3.2",
+    "data-uri-to-buffer": "^3.0.1",
     "debug": "^4.3.1",
     "express": "^4.17.1",
     "get-svg-colors": "^1.5.1",

@@ -1,7 +1,7 @@
 const debug = require('debug')('logoSearch');
 const { orderBy, uniqBy, minBy, get, uniqWith, isEqual } = require('lodash');
 const { LOGO_TYPES, ICON_TYPES, DEFAULT_VIEWPORT } = require('../constants');
-
+const dataUriToBuffer = require('data-uri-to-buffer');
 const { getPaletteDistributionScore, getLuminosity } = require('./colors');
 
 const findJsonLdImages = (text) => {
@@ -90,6 +90,8 @@ const scrapePage = () => {
   };
   // do  not  do that at home  need a better way of getting  imported svg
   const checkSVGuse = (el) => {
+    const styles = el.querySelectorAll('style');
+    styles.forEach((style) => el.removeChild(style));
     const useTag = el.querySelector('use');
     if (useTag) {
       const useHref = useTag.getAttribute('href') || useTag.getAttribute('xlink:href');
@@ -385,13 +387,18 @@ const processScrapedLogos = (logos, url) => {
         logo.url = `${parsedUrl.protocol}${logo.url}`;
       }
 
+      if (logo.url.startsWith('data:')) {
+        logo.data = true;
+        logo.url = dataUriToBuffer(logo.url);
+      }
+
       return logo;
     });
 
   const correctLogos = uniqWith(
     orderBy(
       processedLogos.map((image) =>
-        !image.data && !isValidUrl(image.url) && image.url.indexOf('data:') === -1
+        !image.data && !isValidUrl(image.url)
           ? {
               ...image,
               url: host.endsWith('/') || image.url.startsWith('/') ? `${host}${image.url}` : `${host}/${image.url}`,

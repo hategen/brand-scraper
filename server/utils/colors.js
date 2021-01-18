@@ -115,8 +115,8 @@ const getPaletteDistributionScore = (colors = [], criteria, distance = reldist) 
   return mean(gradients(dist).map(score));
 };
 
-const saveSVGData = async (data) => {
-  const safeFileName = `${uuid()}.svg`;
+const saveSVGData = async (data, type = 'svg') => {
+  const safeFileName = `${uuid()}.${type}`;
   const fileName = safeFileName;
   try {
     fs.writeFileSync(path.join(__dirname, '..', 'tmp', safeFileName), data);
@@ -137,8 +137,8 @@ const saveImage = async (url, fileName = '') => {
       method: 'get',
       responseType: 'stream',
       httpsAgent: new https.Agent({
-        rejectUnauthorized: false
-      })
+        rejectUnauthorized: false,
+      }),
     });
     //removing querystring
     fileName = fileName || url.split('/').pop().split('?').shift();
@@ -196,7 +196,7 @@ const getPalettesFromTags = (tagProps = [], tag) => {
 };
 
 const savePalette = async (palette, fileName) => {
-/*  const width = palette.colors.length * PALETTE_ELEMENT_WIDTH;
+  /*  const width = palette.colors.length * PALETTE_ELEMENT_WIDTH;
   const height = PALETTE_ELEMENT_WIDTH * (palette.mainColor ? 2 : 1);
 
   const canvas = createCanvas(width, height);
@@ -287,6 +287,8 @@ const getPalette = async (fileName, paletteMaxColors = PALETTE_MAX_COLORS) => {
     palette = await getColorThiefPalette(fileName, paletteMaxColors);
   }
 
+  palette.mainColor = palette.mainColor.toUpperCase();
+  palette.colors = palette.colors.map((el) => el.toUpperCase());
   return palette;
 };
 //gm
@@ -338,7 +340,18 @@ async function getPageImagesPalettes(images = []) {
         });
       }
     } else {
-      const { safeFileName, fileName } = await saveSVGData(image.url);
+      let svgBuffer;
+      let type = 'svg';
+      if (image.url.type && image.url.type.includes('svg')) {
+        svgBuffer = image.url;
+      } else if (image.url.type && image.url.type.includes('png')) {
+        svgBuffer = image.url;
+        type = 'png';
+      } else {
+        svgBuffer = Buffer.from(image.url);
+      }
+
+      const { safeFileName, fileName } = await saveSVGData(svgBuffer, type);
       if (safeFileName) {
         const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
         //    imagePalette && (await savePalette(imagePalette, safeFileName));

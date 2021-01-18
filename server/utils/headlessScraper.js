@@ -35,8 +35,10 @@ const openPage = async (browser, config) => {
       waitUntil: ['load'],
     }),
   ]);
-
-  await page.waitFor(500);
+  await new Promise((resolve) => {
+    setTimeout(resolve, 1500);
+  });
+  //await page.waitFor(5000);
 
   return page;
 };
@@ -147,7 +149,10 @@ const getPropsBySelector = (selectors, properties) => {
         elementColors[property] = value;
       });
 
-      if (elementColors['background-color'] !== `rgba(0, 0, 0, 0)`) {
+      if (
+        elementColors['background-color'] !== `rgba(0, 0, 0, 0)` &&
+        !colors.find((color) => color.element === elementColors.element)
+      ) {
         colors.push(elementColors);
       }
     });

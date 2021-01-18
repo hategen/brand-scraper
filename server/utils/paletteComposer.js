@@ -25,6 +25,13 @@ const paletteIsWhite = (palette) => {
     getPaletteColors(palette)[0] === '#FFFFFF'
   );
 };
+const logoIsSVGWithWhites = (palette) => {
+  return (
+    palette.safeFileName.endsWith('svg') &&
+    ((paleteHasMainColor(palette) && getPaletteMainColor(palette) === '#FFFFFF') ||
+      getPaletteColors(palette).includes('#FFFFFF'))
+  );
+};
 
 /*
  *  magick 1.png -fuzz 4% -fill White -opaque White -fuzz 0 -fill Black +opaque White -precision 15 out.png
@@ -41,7 +48,7 @@ const isSVGPalette = (palette) =>
  *  this color  can  be quite easy  to  get  from  adequate svg but in raster could be slightly  off
  */
 const getBrandColor = (logoPalette, iconPalette) => {};
-
+const checkLuminosity = (color) => getLuminosity(color) < BUTTON_BACKGROUND_MAX_LUMINOSITY;
 const getPaletteMainColor = (palette) => get(palette, 'palette.mainColor', []);
 const getPaletteColors = (palette) => get(palette, 'palette.colors', []);
 
@@ -54,24 +61,28 @@ const getButtonsWithMaxWeight = (buttonColors) => {
   return buttonColors.filter((el) => el.weight === maxWeight);
 };
 const getMergedButtonBackgroundPalette = (buttonsPalettes = []) => {
-  return buttonsPalettes.reduce(
-    (acc, palette, idx) => {
-      if (idx === 0) {
-        acc.palette.mainColor = getButtonBackgroundColor(palette);
+  const palette = buttonsPalettes.reduce(
+    (acc, buttonPalette, idx) => {
+      const backgroundColor = getButtonBackgroundColor(buttonPalette);
+      if (checkLuminosity(backgroundColor)) {
+        acc.palette.colors = [...new Set([...acc.palette.colors, backgroundColor])];
       }
-      acc.palette.colors = [...new Set([...acc.palette.colors, getButtonBackgroundColor(palette)])];
       return acc;
     },
     {
       palette: {
-        mainColor: '#FFFFFF',
+        mainColor: '#000000',
         colors: [],
       },
     }
   );
+
+  if (getPaletteColors(palette).length > 0) {
+    palette.palette.mainColor = getPaletteColors(palette)[0];
+  }
+  return palette;
 };
 
-const checkLuminosity = (color) => getLuminosity(color) < BUTTON_BACKGROUND_MAX_LUMINOSITY;
 const getLuminosityDiff = (colorA, colorB) => Math.abs(getLuminosity(colorA) - getLuminosity(colorB));
 // gets most similar color pair  from 2 palettes
 const mapToClosestColors = (paletteA = {}, paletteB = {}, comparator = deltaE94) => {
@@ -270,6 +281,7 @@ const composePalette = (
   let backgroundColor;
 
   let logoIsWhite = paletteIsWhite(logoPalette);
+  let logoWhiteSvg = logoIsSVGWithWhites(logoPalette);
   let iconIsWhite = paletteIsWhite(iconPalette);
   let buttonsPresent = buttonsPalettes.length;
   /*
@@ -293,7 +305,7 @@ const composePalette = (
   //if logo is white  it is easy  to  be tricked
   // getting  potential background color from the logo or 'logo' or header section by filtering out darkest color
 
-  if ((logoIsWhite && !iconIsWhite) || (logoIsWhite && iconIsWhite)) {
+  if ((logoIsWhite && !iconIsWhite) || (logoIsWhite && iconIsWhite) || logoWhiteSvg) {
     const loogoBackgroundColors = [
       ...getFllPaletteColors(logoAreaScreenshotPalette),
       ...getFllPaletteColors(logoAreaScreenshotPaletteWithoutBackground),
@@ -311,24 +323,28 @@ const composePalette = (
     }
     //getting buttons with most different color relative to background
     if (buttonsPresent) {
-      const potentialMainColor = maxBy(
+      let potentialMainColor;
+      const buttonsWithMaxWeight = getButtonsWithMaxWeight(buttonColors);
+      if (buttonsWithMaxWeight.length > 1) {
+        const closestButtonColors = mapToClosestColors(mergedButtonBackgroundPalette, logoPalette);
+        potentialMainColor = minBy(closestButtonColors, 'comparingParam').paletteAColor;
+      } else {
+        potentialMainColor = maxBy(buttonColors, 'weight').color;
+      }
+
+      /* const potentialMainColor = maxBy(
         mapToFurthestColors(mergedButtonBackgroundPalette, {
           palette: { mainColor: backgroundColor, colors: [backgroundColor] },
         }),
         'comparingParam'
       ).paletteAColor;
-
+*/
       if (
         potentialMainColor &&
-        deltaE94(potentialMainColor, backgroundColor) < COLOR_DISTANCE_TRESHOLD &&
+        deltaE94(potentialMainColor, backgroundColor) > COLOR_DISTANCE_TRESHOLD &&
         checkLuminosity(potentialMainColor)
       ) {
-        mainColor = maxBy(
-          mapToFurthestColors(mergedButtonBackgroundPalette, {
-            palette: { mainColor: potentialMainColor, colors: [potentialMainColor] },
-          }),
-          'comparingParam'
-        ).paletteAColor;
+        mainColor = potentialMainColor;
       } else if (!potentialMainColor) {
         mainColor = maxBy(
           mapToFurthestColors(iconPalette, {
