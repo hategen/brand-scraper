@@ -140,8 +140,9 @@ const saveImage = async (url, fileName = '') => {
         rejectUnauthorized: false,
       }),
     });
+    const responseUrl = response.data.responseUrl;
     //removing querystring
-    fileName = fileName || url.split('/').pop().split('?').shift();
+    fileName = fileName || responseUrl.split('/').pop().split('?').shift();
 
     const fileExtension = fileName.split('.').pop();
     safeFileName = `${uuid()}.${fileExtension}`;
@@ -320,50 +321,54 @@ async function getPageImagesPalettes(images = []) {
   const palettes = [];
   const filteredImages = images.filter((imageObject) => imageObject);
   for (const image of filteredImages) {
-    if (!image.data) {
-      let { safeFileName, fileName } = await saveImage(image.url);
+    try {
+      if (!image.data) {
+        let { safeFileName, fileName } = await saveImage(image.url);
 
-      if ((fileName && fileName.endsWith('.ico')) || (safeFileName && safeFileName.endsWith('.ico'))) {
-        safeFileName = await convertICOToPNG(safeFileName);
-      }
-      if (safeFileName) {
-        const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
-        //    imagePalette && (await savePalette(imagePalette, safeFileName));
-        palettes.push({
-          safeFileName,
-          fileName,
-          palette: imagePalette,
-          type: image.type,
-          priority: image.priority,
-          size: image.size || undefined,
-          boundingRect: image.boundingRect,
-        });
-      }
-    } else {
-      let svgBuffer;
-      let type = 'svg';
-      if (image.url.type && image.url.type.includes('svg')) {
-        svgBuffer = image.url;
-      } else if (image.url.type && image.url.type.includes('png')) {
-        svgBuffer = image.url;
-        type = 'png';
+        if ((fileName && fileName.endsWith('.ico')) || (safeFileName && safeFileName.endsWith('.ico'))) {
+          safeFileName = await convertICOToPNG(safeFileName);
+        }
+        if (safeFileName) {
+          const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
+          //    imagePalette && (await savePalette(imagePalette, safeFileName));
+          palettes.push({
+            safeFileName,
+            fileName,
+            palette: imagePalette,
+            type: image.type,
+            priority: image.priority,
+            size: image.size || undefined,
+            boundingRect: image.boundingRect,
+          });
+        }
       } else {
-        svgBuffer = Buffer.from(image.url);
-      }
+        let svgBuffer;
+        let type = 'svg';
+        if (image.url.type && image.url.type.includes('svg')) {
+          svgBuffer = image.url;
+        } else if (image.url.type && image.url.type.includes('png')) {
+          svgBuffer = image.url;
+          type = 'png';
+        } else {
+          svgBuffer = Buffer.from(image.url);
+        }
 
-      const { safeFileName, fileName } = await saveSVGData(svgBuffer, type);
-      if (safeFileName) {
-        const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
-        //    imagePalette && (await savePalette(imagePalette, safeFileName));
-        palettes.push({
-          safeFileName,
-          fileName,
-          palette: imagePalette,
-          type: image.type,
-          priority: image.priority,
-          boundingRect: image.boundingRect,
-        });
+        const { safeFileName, fileName } = await saveSVGData(svgBuffer, type);
+        if (safeFileName) {
+          const imagePalette = await getPalette(safeFileName, LOGO_PALETTE_MAX_COLORS);
+          //    imagePalette && (await savePalette(imagePalette, safeFileName));
+          palettes.push({
+            safeFileName,
+            fileName,
+            palette: imagePalette,
+            type: image.type,
+            priority: image.priority,
+            boundingRect: image.boundingRect,
+          });
+        }
       }
+    } catch (err) {
+      debug(err);
     }
   }
   return palettes;

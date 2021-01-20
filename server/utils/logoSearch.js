@@ -1,6 +1,14 @@
 const debug = require('debug')('logoSearch');
 const { orderBy, uniqBy, minBy, get, uniqWith, isEqual } = require('lodash');
-const { LOGO_TYPES, ICON_TYPES, DEFAULT_VIEWPORT } = require('../constants');
+const {
+  LOGO_TYPES,
+  ICON_TYPES,
+  DEFAULT_VIEWPORT,
+  MIN_LOGO_WIDTH,
+  MIN_LOGO_HEIGTH,
+  MAX_LOGO_WIDTH,
+  MAX_LOGO_HEIGTH,
+} = require('../constants');
 const dataUriToBuffer = require('data-uri-to-buffer');
 const { getPaletteDistributionScore, getLuminosity } = require('./colors');
 
@@ -88,6 +96,21 @@ const scrapePage = () => {
     }
     return null;
   };
+
+  var rgbToHex = (rgbColor) => {
+    const background = 255;
+    const colorArray = rgbColor.replace(/rgba|rgb|\(|\)/g, '').split(',');
+    if (colorArray.length === 3) {
+      colorArray.push(1);
+    }
+    const [rs, gs, bs, as] = colorArray.map((el) => parseFloat(el, 10));
+
+    const r = Math.floor((1 - as) * background + as * rs);
+    const g = Math.floor((1 - as) * background + as * gs);
+    const b = Math.floor((1 - as) * background + as * bs);
+
+    return `#${r.toString(16)}${g.toString(16)}${b.toString(16)}`;
+  };
   // do  not  do that at home  need a better way of getting  imported svg
   const checkSVGuse = (el) => {
     const styles = el.querySelectorAll('style');
@@ -109,10 +132,10 @@ const scrapePage = () => {
       const fill = style.getPropertyValue('fill');
       const stroke = style.getPropertyValue('stroke');
       if (fill !== 'none') {
-        el.setAttribute('fill', fill);
+        el.setAttribute('fill', rgbToHex(fill));
       }
-      if (fill !== 'none') {
-        el.setAttribute('stroke', stroke);
+      if (stroke !== 'none') {
+        el.setAttribute('stroke', rgbToHex(stroke));
       }
     });
 
@@ -231,6 +254,7 @@ const scrapePage = () => {
           `a[href="${location.origin}"] *`,
           `a[href="${location.origin}/"] *`,
           `a[href^="${location.origin}/?"] *`,
+          `a[href^="${location.origin}?"] *`,
           `a[href="${location.href}"] *`,
           `a[href="${location.pathname}"] *`,
           `a[href="/"]`,
@@ -239,6 +263,7 @@ const scrapePage = () => {
           `a[href="${location.origin}"]`,
           `a[href="${location.origin}/"]`,
           `a[href^="${location.origin}/?"]`,
+          `a[href^="${location.origin}?"]`,
           `a[href="${location.href}"]`,
           `a[href="${location.pathname}"]`,
           `a[href="/"]>*`,
@@ -248,6 +273,7 @@ const scrapePage = () => {
           `a[href="${location.origin}"]+*`,
           `a[href="${location.origin}/"]+*`,
           `a[href^="${location.origin}/?"]+*`,
+          `a[href^="${location.origin}?"]+*`,
           `a[href="${location.href}"]+*`,
           `a[href="${location.pathname}"]+*`,
         ]),
@@ -275,6 +301,7 @@ const scrapePage = () => {
           `a[href="${location.origin}"] img`,
           `a[href="${location.origin}/"] img`,
           `a[href^="${location.origin}/?"] img`,
+          `a[href^="${location.origin}?"] img`,
           `a[href="${location.href}"] img`,
           `a[href="${location.pathname}"] img`,
         ]),
@@ -299,6 +326,7 @@ const scrapePage = () => {
           `a[href="${location.origin}"] svg`,
           `a[href="${location.origin}/"] svg`,
           `a[href^="${location.origin}/?"] svg`,
+          `a[href^="${location.origin}?"] svg`,
           `a[href="${location.href}"] svg`,
           `a[href="${location.pathname}"] svg`,
         ]),
@@ -326,6 +354,13 @@ const logoProcessors = {
   'css:background-image/home-leading': extractURL,
 };
 
+const lgoDimensionsCheck = ({ width, height }) => {
+  if (width < MIN_LOGO_WIDTH || height < MIN_LOGO_HEIGTH || width > MAX_LOGO_WIDTH || height > MAX_LOGO_HEIGTH) {
+    return false;
+  }
+  return true;
+};
+
 const adjustWeights = (logoPalettes) => {
   logoPalettes.forEach((logo) => {
     const isSVG = logo.fileName.endsWith('.svg');
@@ -333,7 +368,7 @@ const adjustWeights = (logoPalettes) => {
       logo.priority -= 1;
     }
     if (LOGO_TYPES.includes(logo.type) && !logo.palette) {
-      logo.priority += 1;
+      logo.priority += 4;
     }
 
     if (
@@ -342,7 +377,7 @@ const adjustWeights = (logoPalettes) => {
       logo.palette &&
       (!logo.palette.colors || logo.palette.colors.length === 0)
     ) {
-      logo.priority += 1;
+      logo.priority += 4;
     }
 
     if (
@@ -351,14 +386,20 @@ const adjustWeights = (logoPalettes) => {
       logo.palette.colors.length === 1 &&
       ['#000000', '#FFFFFF'].includes(logo.palette.colors[0])
     ) {
-      logo.priority += 1;
+      logo.priority += 0;
     }
     if (logo.palette && logo.palette.mainColor && ['#000000', '#FFFFFF'].includes(logo.palette.mainColor)) {
-      logo.priority += 1;
+      logo.priority += 0;
     }
 
-    if (logo.boundingRect && logo.boundingRect.isVisible) {
-      logo.priority -= 1;
+    if (logo.boundingRect) {
+      if (!lgoDimensionsCheck(logo.boundingRect)) {
+        logo.priority += 3;
+      }
+
+      if (logo.boundingRect.isVisible) {
+        logo.priority -= 1;
+      }
     }
 
     if (ICON_TYPES.includes(logo.type) && logo.size && !logo.fileName.includes('apple-touch-icon')) {

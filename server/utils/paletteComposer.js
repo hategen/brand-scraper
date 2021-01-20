@@ -388,7 +388,13 @@ const composePalette = (
       }).filter((el) => checkLuminosity(el.paletteAColor));
 
       if (mostDistantLogoColorToMain.length) {
-        secondaryColor = maxBy(mostDistantLogoColorToMain, 'comparingParam').paletteAColor;
+        let z = maxBy(mostDistantLogoColorToMain, 'comparingParam');
+        //if color is too close to  main  try  buttons
+        if (z.comparingParam < COLOR_DISTANCE_TRESHOLD && buttonColors.length > 1) {
+          secondaryColor = buttonColors[1].color;
+        } else {
+          secondaryColor = z.paletteAColor;
+        }
       } else {
         secondaryColor = mainColor;
       }
@@ -404,7 +410,7 @@ const composePalette = (
       getLuminosity(cleanBackgroundColor) <= BACKGROUND_MAX_LUMINOSITY
     ) {
       if (!logoAreaScreenshotPaletteWithoutBackground.customClipping) {
-        backgroundColor = chroma.mix(mainColor, chroma(cleanBackgroundColor).luminance(0.9).hex()).hex();
+        backgroundColor = chroma.mix(cleanBackgroundColor, chroma(mainColor).luminance(0.9).hex()).hex();
       } else {
         backgroundColor = cleanBackgroundColor;
       }
